@@ -358,7 +358,7 @@
                 comprovantesPdfCache[pagamentoId] = comprovanteSeguro;
                 blocoComprovante = `<button type="button" class="btn-abrir-pdf" onclick="AgnaylsAdmin.abrirComprovantePdf('${pagamentoId}')"><i class="fa-solid fa-file-pdf"></i> Abrir comprovante (PDF)</button>`;
             } else {
-                blocoComprovante = `<img class="comprovante-img" src="${comprovanteSeguro}" onclick="AgnaylsAdmin.ampliarComprovante(this.src)">`;
+                blocoComprovante = `<img class="comprovante-img" src="${Agnayls.escaparAtributo(comprovanteSeguro)}" onclick="AgnaylsAdmin.ampliarComprovante(this.src)">`;
             }
 
             cartoes.push(`
