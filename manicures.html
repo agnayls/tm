@@ -1,0 +1,2971 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Agnayls - Painel Administrativo</title>
+    <link rel="icon" href="assets/logo.png" type="image/png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-check-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="termos-conteudo.js"></script>
+    <style>
+        :root {
+            --bg: #fdf6f9;
+            --card: #ffffff;
+            --rosa: #e4a5b8;
+            --rosa-escuro: #c47d8f;
+            --rosa-claro: #fbeaef;
+            --lilas: #d5c3e0;
+            --lilas-claro: #f3ecf8;
+            --bege: #f5ece3;
+            --nude: #efe3d8;
+            --verde: #b5d8c3;
+            --verde-escuro: #7dab8e;
+            --vermelho: #e8b4b8;
+            --vermelho-escuro: #c48d92;
+            --texto: #5d4a5c;
+            --texto-claro: #8a7a89;
+            --sombra: 0 4px 20px rgba(180, 150, 170, 0.1);
+            --sombra-lg: 0 12px 40px rgba(180, 150, 170, 0.18);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --radius-xs: 8px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--texto);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(228,165,184,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 60%, rgba(213,195,224,0.06) 0%, transparent 50%);
+            background-attachment: fixed;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 16px 20px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            box-shadow: var(--sombra);
+            flex-wrap: wrap;
+            border: 1px solid rgba(228,165,184,0.1);
+        }
+        .header-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--rosa-claro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: var(--rosa-escuro);
+            border: 3px solid white;
+            box-shadow: 0 2px 12px rgba(180,150,170,0.2);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .header-logo img { width:100%; height:100%; object-fit:cover; }
+        .header-info h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--texto);
+        }
+        .header-info .slogan {
+            font-size: 0.85rem;
+            color: var(--texto-claro);
+            font-style: italic;
+        }
+
+        .tabs-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.04);
+            border-top: 1px solid rgba(228,165,184,0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 env(safe-area-inset-bottom);
+            z-index: 50;
+            transition: var(--transition);
+        }
+        .tab-btn-bottom {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 4px;
+            border: none;
+            background: transparent;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.65rem;
+            color: var(--texto-claro);
+            cursor: pointer;
+            transition: var(--transition);
+            touch-action: manipulation;
+            gap: 3px;
+            letter-spacing: 0.2px;
+            position: relative;
+            border-radius: 12px;
+        }
+        .tab-btn-bottom svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--texto-claro);
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: var(--transition);
+        }
+        .tab-btn-bottom span {
+            line-height: 1;
+        }
+        .tab-btn-bottom.ativo {
+            color: var(--rosa-escuro);
+            font-weight: 700;
+        }
+        .tab-btn-bottom.ativo svg {
+            stroke: var(--rosa-escuro);
+        }
+        .tab-btn-bottom::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            width: 60%;
+            height: 3px;
+            background: var(--rosa);
+            border-radius: 0 0 4px 4px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .tab-btn-bottom.ativo::after {
+            opacity: 1;
+        }
+        .tab-btn-bottom:hover:not(.ativo) {
+            color: var(--texto);
+            background: rgba(228,165,184,0.05);
+        }
+        .tab-btn-bottom:hover:not(.ativo) svg {
+            stroke: var(--texto);
+        }
+
+        .tab-content { display: none; animation: fadeSlide 0.35s ease; }
+        .tab-content.ativo { display: block; }
+        @keyframes fadeSlide {
+            from { opacity:0; transform:translateY(12px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 18px 18px;
+            box-shadow: var(--sombra);
+            margin-bottom: 16px;
+            border: 1px solid rgba(228,165,184,0.08);
+        }
+        .card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 14px;
+            color: var(--texto);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card h2 i { color: var(--rosa-escuro); font-size:1rem; }
+
+        .filtro-data {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .filtro-data input,
+        .filtro-data select {
+            padding: 8px 12px;
+            border-radius: 50px;
+            border: 2px solid #e8dfe4;
+            background: #fdfafb;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
+            color: var(--texto);
+            outline: none;
+            transition: var(--transition);
+        }
+        .filtro-data input:focus,
+        .filtro-data select:focus {
+            border-color: var(--rosa);
+            box-shadow: 0 0 0 4px rgba(228,165,184,0.1);
+        }
+
+        .lista-agendamentos { display:flex; flex-direction:column; gap:10px; }
+        .agendamento-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid #f0e6ec;
+            background: #fdfafc;
+            transition: var(--transition);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .agendamento-item:hover {
+            box-shadow: 0 4px 16px rgba(180,150,170,0.12);
+            border-color: var(--rosa-claro);
+        }
+        .agendamento-info { flex:1; min-width:160px; cursor:pointer; }
+        .agendamento-info strong { font-size:0.95rem; color:var(--texto); }
+        .agendamento-info .detalhes {
+            font-size:0.8rem;
+            color:var(--texto-claro);
+            margin-top:3px;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size:0.7rem;
+            letter-spacing:0.3px;
+            text-transform:uppercase;
+        }
+        .status-agendado { background:#e8f0fe; color:#4a6fa5; }
+        .status-concluido { background:#e6f4ea; color:#3d6b4a; }
+        .status-cancelado { background:#fce8ea; color:#a54a5a; }
+
+        .acoes { display:flex; gap:6px; flex-wrap:wrap; }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size:0.8rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing:0.2px;
+            touch-action: manipulation;
+        }
+        .btn-sm { padding:5px 12px; font-size:0.75rem; }
+        .btn-rosa { background:var(--rosa); color:white; box-shadow:0 4px 12px rgba(196,125,143,0.3); }
+        .btn-rosa:hover { background:#d593a6; transform:translateY(-2px); }
+        .btn-verde { background:var(--verde); color:#3d6b4a; }
+        .btn-verde:hover { background:#a3ccb2; transform:translateY(-2px); }
+        .btn-vermelho { background:var(--vermelho); color:#a54a5a; }
+        .btn-vermelho:hover { background:#d9a3a8; transform:translateY(-2px); }
+        .btn-outline { background:white; border:2px solid var(--rosa); color:var(--rosa-escuro); }
+        .btn-outline:hover { background:var(--rosa-claro); }
+        .btn-whatsapp { background:#25D366; color:#fff; }
+        .btn-whatsapp:hover { background:#20ba5a; transform:translateY(-2px); }
+
+        .resumo-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+            gap:10px;
+            margin-bottom:16px;
+        }
+        .resumo-card {
+            background:var(--card);
+            border-radius:var(--radius-sm);
+            padding:14px;
+            text-align:center;
+            box-shadow:var(--sombra);
+            border:1px solid rgba(228,165,184,0.08);
+        }
+        .resumo-card .valor {
+            font-size:1.5rem;
+            font-weight:700;
+            color:var(--rosa-escuro);
+            font-family:'Playfair Display',serif;
+        }
+        .resumo-card .label { font-size:0.7rem; color:var(--texto-claro); text-transform:uppercase; letter-spacing:0.5px; }
+
+        .lista-financeiro { display:flex; flex-direction:column; gap:6px; }
+        .financeiro-item {
+            display:flex;
+            flex-direction:column;
+            gap:3px;
+            padding:10px 14px;
+            border-radius:var(--radius-xs);
+            background:#fdfafc;
+            border:1px solid #f0e6ec;
+            font-size:0.85rem;
+        }
+        .financeiro-item .linha-topo-financeiro {
+            display:flex;
+            justify-content:space-between;
+            align-items:baseline;
+            gap:10px;
+        }
+        .financeiro-item .nome-cliente-financeiro {
+            font-weight:700;
+            color:var(--texto);
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+        }
+        .financeiro-item .valor-financeiro {
+            font-weight:700;
+            color:var(--verde-escuro);
+            flex-shrink:0;
+        }
+        .financeiro-item .linha-detalhe-financeiro {
+            font-size:0.78rem;
+            color:var(--texto-claro);
+        }
+
+        .config-section { margin-bottom:18px; }
+        .config-section h3 {
+            font-weight:600;
+            font-size:0.95rem;
+            color:var(--texto);
+            margin-bottom:8px;
+            display:flex;
+            align-items:center;
+            gap:6px;
+        }
+        .input-group {
+            display:flex;
+            gap:6px;
+            align-items:center;
+            flex-wrap:wrap;
+            margin-bottom:6px;
+        }
+        .input-group input,
+        .input-group select {
+            flex:1 1 auto;
+            padding:8px 12px;
+            border-radius:50px;
+            border:2px solid #e8dfe4;
+            background:#fdfafb;
+            font-family:'Nunito',sans-serif;
+            font-size:0.85rem;
+            color:var(--texto);
+            outline:none;
+            min-width:100px;
+        }
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color:var(--rosa);
+            box-shadow:0 0 0 4px rgba(228,165,184,0.1);
+        }
+
+        .servico-lista,
+        .pagamento-lista {
+            display:flex;
+            flex-direction:column;
+            gap:4px;
+        }
+        .servico-item,
+        .pagamento-item {
+            display:flex;
+            align-items:center;
+            gap:6px;
+            background:#fdfafc;
+            padding:6px 10px;
+            border-radius:50px;
+            border:1px solid #f0e6ec;
+            font-size:0.85rem;
+        }
+        .servico-item span,
+        .pagamento-item span { flex:1; }
+
+        .btn-icon {
+            width:30px; height:30px;
+            border-radius:50%;
+            border:none;
+            background:transparent;
+            cursor:pointer;
+            color:var(--texto-claro);
+            transition:var(--transition);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            touch-action:manipulation;
+        }
+        .btn-icon:hover { background:var(--rosa-claro); color:var(--rosa-escuro); }
+
+        .overlay {
+            position:fixed;
+            top:0; left:0; width:100%; height:100%;
+            background:rgba(80,50,60,0.35);
+            z-index:100;
+            display:none;
+            align-items:center;
+            justify-content:center;
+            padding:20px;
+            backdrop-filter:blur(3px);
+            -webkit-backdrop-filter:blur(3px);
+        }
+        .overlay.active { display:flex; }
+
+        body.agnail-modal-aberto {
+            overflow: hidden;
+        }
+        body.agnail-modal-aberto > *:not(.overlay) {
+            pointer-events: none;
+            user-select: none;
+        }
+        body.agnail-modal-aberto > .overlay {
+            pointer-events: auto;
+            user-select: auto;
+        }
+        .modal {
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:24px 20px;
+            width:100%;
+            max-width:480px;
+            box-shadow:var(--sombra-lg);
+            position:relative;
+            animation:slideUp 0.35s cubic-bezier(0.22,0.61,0.36,1);
+            max-height:85vh;
+            overflow-y:auto;
+            border:1px solid rgba(228,165,184,0.1);
+        }
+        @keyframes slideUp {
+            from { opacity:0; transform:translateY(40px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+        .modal-fechar {
+            position:absolute;
+            top:10px; right:12px;
+            width:34px; height:34px;
+            border-radius:50%;
+            border:none;
+            background:var(--rosa-claro);
+            color:var(--rosa-escuro);
+            cursor:pointer;
+            font-size:1rem;
+            transition:var(--transition);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .modal-fechar:hover { background:var(--rosa); color:white; }
+        .modal h3 {
+            font-family:'Playfair Display',serif;
+            font-size:1.3rem;
+            margin-bottom:8px;
+            text-align:center;
+            color:var(--texto);
+        }
+        .modal p.sub {
+            text-align:center;
+            color:var(--texto-claro);
+            font-size:0.9rem;
+            margin-bottom:20px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #3d3d3d;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            z-index: 9999;
+            transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            max-width: 90%;
+            text-align: center;
+            pointer-events: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.sucesso {
+            background: #7dab8e;
+        }
+        .toast.erro {
+            background: #c48d92;
+        }
+
+        .checkbox-group {
+            display:flex;
+            flex-wrap:wrap;
+            gap:12px;
+            align-items:center;
+            margin-bottom:8px;
+        }
+        .checkbox-group label {
+            display:flex;
+            align-items:center;
+            gap:4px;
+            font-size:0.85rem;
+            font-weight:500;
+            cursor:pointer;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width:18px; height:18px;
+            accent-color:var(--rosa);
+            cursor:pointer;
+        }
+        .checkbox-group-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: repeat(4, auto);
+            grid-auto-flow: column;
+            gap: 10px 16px;
+            margin-bottom: 8px;
+        }
+        .checkbox-group-2col label {
+            display:flex;
+            align-items:center;
+            gap:6px;
+            font-size:0.85rem;
+            font-weight:500;
+            cursor:pointer;
+        }
+        .checkbox-group-2col input[type="checkbox"] {
+            width:18px; height:18px;
+            accent-color:var(--rosa);
+            cursor:pointer;
+            flex-shrink: 0;
+        }
+
+        .temas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 12px;
+            margin: 8px 0;
+        }
+        .tema-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 10px 6px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--sombra);
+        }
+        .tema-option:hover {
+            transform: translateY(-2px);
+            border-color: var(--rosa);
+        }
+        .tema-option.selecionado {
+            border-color: var(--rosa-escuro);
+            background: var(--rosa-claro);
+        }
+        .tema-bolinha {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+        .tema-nome {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--texto);
+        }
+
+        .acoes-config-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 420px;
+        }
+        .acao-config-tile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            aspect-ratio: 1;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            border: 2px solid #e8dfe4;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 0.78rem;
+            color: var(--texto);
+            text-align: center;
+            padding: 8px 6px;
+            touch-action: manipulation;
+        }
+        .acao-config-tile i {
+            font-size: 1.5rem;
+            color: var(--rosa-escuro);
+        }
+        .acao-config-tile:hover {
+            border-color: var(--rosa);
+            transform: translateY(-2px);
+            box-shadow: var(--sombra);
+        }
+        .acao-config-tile:active {
+            transform: scale(0.96);
+        }
+        .acao-config-tile.tile-perigo {
+            border-color: #f0d5da;
+            color: var(--vermelho-escuro);
+        }
+        .acao-config-tile.tile-perigo i {
+            color: var(--vermelho-escuro);
+        }
+        .acao-config-tile.tile-perigo:hover {
+            border-color: var(--vermelho-escuro);
+            background: #fdf6f7;
+        }
+
+        .link-compartilhar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .link-compartilhar input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 50px;
+            border: 2px solid #e8dfe4;
+            background: #f5f0f2;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.85rem;
+            color: var(--texto);
+            outline: none;
+            min-width: 200px;
+        }
+        .link-compartilhar input:focus {
+            border-color: var(--rosa);
+        }
+
+        .folgas-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .folga-item {
+            background: var(--rosa-claro);
+            border-radius: 50px;
+            padding: 4px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--rosa-escuro);
+            border: 1px solid var(--rosa);
+        }
+        .folga-item button {
+            background: none;
+            border: none;
+            color: var(--vermelho-escuro);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0 2px;
+        }
+        .folga-item button:hover {
+            transform: scale(1.2);
+        }
+
+        .relatorio-header { text-align:center; margin-bottom:18px; }
+        .relatorio-header h2 { font-family:'Playfair Display', serif; font-size:1.25rem; font-weight:500; color:var(--texto); margin-bottom:2px; }
+        .relatorio-header p { color:var(--texto-claro); font-size:0.88rem; }
+        .relatorio-secao { margin-bottom:22px; }
+        .relatorio-secao h3 {
+            font-size:1rem; font-weight:700; color:var(--rosa-escuro);
+            margin-bottom:8px; padding-bottom:4px; border-bottom:2px solid var(--rosa);
+        }
+        .relatorio-dia-titulo { font-size:0.85rem; font-weight:700; color:var(--texto); margin:12px 0 6px; }
+        .tabela-relatorio-wrap { overflow-x:auto; }
+        .tabela-relatorio { width:100%; border-collapse:collapse; margin-bottom:4px; font-size:0.85rem; }
+        .tabela-relatorio th, .tabela-relatorio td { border:1px solid #e0d5da; padding:7px 10px; text-align:left; }
+        .tabela-relatorio th { background:var(--rosa-claro); color:var(--texto); font-weight:700; }
+        .tabela-relatorio td.valor, .tabela-relatorio th.valor { text-align:right; white-space:nowrap; }
+        .relatorio-subtotal { text-align:right; font-size:0.85rem; font-weight:700; color:var(--texto); margin:2px 0 10px; }
+        .relatorio-total-geral {
+            text-align:right; font-size:1.1rem; font-weight:800; color:var(--rosa-escuro);
+            margin-top:16px; padding-top:12px; border-top:2px solid var(--rosa-escuro);
+        }
+        .relatorio-vazio { text-align:center; color:var(--texto-claro); padding:36px 12px; font-size:0.9rem; }
+
+        @media print {
+            body * { visibility:hidden; }
+            #relatorioImpressao, #relatorioImpressao * { visibility:visible; }
+            #relatorioImpressao { position:absolute; top:0; left:0; width:100%; padding:12px; }
+            .tabela-relatorio th { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+        }
+
+        #detalhesConteudo a {
+            color: var(--rosa-escuro);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px dotted var(--rosa-escuro);
+        }
+        #detalhesConteudo a:hover {
+            border-bottom: 2px solid var(--rosa-escuro);
+        }
+
+        @media (max-width:600px) {
+            .container { padding:10px 12px; }
+            .header { padding:12px 14px; gap:10px; }
+            .header-logo { width:50px; height:50px; font-size:22px; }
+            .header-info h1 { font-size:1.2rem; }
+            .tab-btn-bottom { font-size:0.55rem; padding:4px 2px; }
+            .tab-btn-bottom svg { width:20px; height:20px; }
+            .card { padding:14px; }
+            .agendamento-item { flex-direction:column; align-items:flex-start; }
+            .acoes { width:100%; justify-content:flex-end; }
+            .resumo-cards { grid-template-columns:1fr 1fr; }
+            .input-group { flex-direction:column; align-items:stretch; }
+            .input-group input { width:100%; }
+            .checkbox-group { justify-content:center; }
+            .temas-grid { grid-template-columns: repeat(4, 1fr); }
+            .link-compartilhar input { min-width: 120px; }
+            .toast { 
+                top: 10px;
+                font-size: 0.75rem; 
+                padding: 10px 18px; 
+                white-space: normal;
+                max-width: 92%;
+            }
+            .modal { padding:18px 14px; max-width:100%; }
+            .tabela-relatorio th, .tabela-relatorio td { padding:5px 7px; font-size:0.78rem; }
+        }
+    </style>
+    <style>
+        body.agnail-carregando > .container,
+        body.agnail-carregando > .tabs-bottom { display: none !important; }
+        #agnailAuthGate {
+            position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center;
+            justify-content: center; flex-direction: column; z-index: 999; gap: 12px;
+        }
+        #agnailAuthGate .spinner {
+            width: 26px; height: 26px; border: 3px solid var(--rosa-claro); border-top-color: var(--rosa-escuro);
+            border-radius: 50%; animation: agnailGirar 0.8s linear infinite;
+        }
+        @keyframes agnailGirar { to { transform: rotate(360deg); } }
+        #agnailAuthGate p { color: var(--texto-claro); font-size: 0.85rem; }
+    </style>
+</head>
+<body class="agnail-carregando">
+
+<div id="agnailAuthGate">
+    <span class="spinner"></span>
+    <p>Verificando acesso...</p>
+</div>
+
+<div class="overlay" id="overlayTermos" style="z-index:400;">
+    <div class="modal" style="max-width:520px;">
+        <div id="conteudoTermos" style="font-size:0.86rem; line-height:1.6; color:var(--texto); max-height:52vh; overflow-y:auto; padding-right:4px;"></div>
+        <label style="display:flex; align-items:flex-start; gap:8px; margin-top:16px; font-size:0.85rem; cursor:pointer;">
+            <input type="checkbox" id="checkAceiteTermos" style="margin-top:3px;">
+            <span>Li e aceito os Termos de Uso e a Política de Privacidade.</span>
+        </label>
+        <button class="btn btn-rosa" id="btnAceitarTermos" style="width:100%; margin-top:14px;" disabled>Continuar</button>
+    </div>
+</div>
+
+<div class="overlay" id="overlayEditarPerfil">
+    <div class="modal" style="max-width:420px;">
+        <button class="modal-fechar" id="fecharEditarPerfil"><i class="fa-solid fa-xmark"></i></button>
+        <h3 style="margin-bottom:14px;"><i class="fa-solid fa-store"></i> Logo, Nome e Slogan</h3>
+
+        <div class="config-section">
+            <h3 style="font-size:0.9rem;"><i class="fa-solid fa-image"></i> Logo da Empresa</h3>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <input type="file" id="inputLogo" accept="image/*" style="display:none;">
+                <button class="btn btn-outline btn-sm" id="btnUploadLogo" type="button">Escolher imagem</button>
+                <button class="btn btn-outline btn-sm" id="btnRemoverLogo" type="button">Remover logo</button>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h3 style="font-size:0.9rem;"><i class="fa-solid fa-signature"></i> Nome</h3>
+            <input type="text" id="configNome" placeholder="Ex: Studio da Ana" maxlength="50" style="width:100%; padding:10px 14px; border-radius:50px; border:2px solid #e8dfe4;">
+        </div>
+
+        <div class="config-section">
+            <h3 style="font-size:0.9rem;"><i class="fa-solid fa-quote-right"></i> Slogan</h3>
+            <input type="text" id="configSlogan" placeholder="Ex: Cuidando das suas unhas com carinho" maxlength="50" style="width:100%; padding:10px 14px; border-radius:50px; border:2px solid #e8dfe4;">
+        </div>
+
+        <p style="font-size:0.75rem; color:var(--texto-claro); text-align:center; margin-top:6px;">As alterações são salvas automaticamente.</p>
+    </div>
+</div>
+
+<div class="overlay" id="overlayAddServico" style="z-index:350;">
+    <div class="modal" style="max-width:380px;">
+        <button class="modal-fechar" id="fecharAddServico"><i class="fa-solid fa-xmark"></i></button>
+        <h3 style="margin-bottom:14px;"><i class="fa-solid fa-spa"></i> Adicionar Serviço</h3>
+        <form id="formAddServico">
+            <div style="margin-bottom:12px;">
+                <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:5px;">Nome do serviço</label>
+                <input type="text" id="novoServicoNome" placeholder="Ex: Manicure Simples" maxlength="50" required style="width:100%; padding:10px 14px; border-radius:50px; border:2px solid #e8dfe4;">
+            </div>
+            <div style="display:flex; gap:8px; margin-bottom:14px;">
+                <div style="flex:1;">
+                    <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:5px;">Valor (R$)</label>
+                    <input type="number" id="novoServicoValor" placeholder="Ex: 30" step="0.01" min="0" required style="width:100%; padding:10px 14px; border-radius:50px; border:2px solid #e8dfe4;">
+                </div>
+                <div style="flex:1;">
+                    <label style="display:block; font-size:0.82rem; font-weight:600; margin-bottom:5px;">Duração (min)</label>
+                    <input type="number" id="novoServicoDuracao" placeholder="Ex: 30" step="5" min="5" required style="width:100%; padding:10px 14px; border-radius:50px; border:2px solid #e8dfe4;">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-rosa" style="width:100%;">Adicionar</button>
+        </form>
+    </div>
+</div>
+
+<div class="overlay" id="overlayEscolhaPlano" style="display:none; align-items:center; justify-content:center; z-index:300;">
+    <div class="modal" style="max-width:480px;">
+        <div style="text-align:center; margin-bottom:18px;">
+            <div style="font-size:3rem; color:var(--rosa-escuro); margin-bottom:6px;">💅</div>
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--texto); margin-bottom:4px;">Bem-vinda ao Agnayls!</h3>
+            <p class="sub" style="color:var(--texto-claro); font-size:0.9rem;">Escolha como você atende, pra gente configurar o painel certo.</p>
+        </div>
+        <div id="opcoesPlano" style="display:grid; gap:12px;">
+            <label class="plano-opcao" data-plano="individual" style="display:block; border:2px solid #e8dfe4; border-radius:var(--radius-sm); padding:16px; cursor:pointer; transition:var(--transition);">
+                <input type="radio" name="planoEscolhido" value="individual" style="display:none;">
+                <strong style="font-size:1rem;"><i class="fa-solid fa-user"></i> Individual</strong>
+                <p style="font-size:0.85rem; color:var(--texto-claro); margin-top:4px;">Você atende sozinha. Mensalidade fixa.</p>
+            </label>
+            <label class="plano-opcao" data-plano="studio" style="display:block; border:2px solid #e8dfe4; border-radius:var(--radius-sm); padding:16px; cursor:pointer; transition:var(--transition);">
+                <input type="radio" name="planoEscolhido" value="studio" style="display:none;">
+                <strong style="font-size:1rem;"><i class="fa-solid fa-users"></i> Studio</strong>
+                <p style="font-size:0.85rem; color:var(--texto-claro); margin-top:4px;">Você tem uma equipe. Cobrança por funcionária, mínimo de 2 cadastradas — cada uma com a própria agenda.</p>
+            </label>
+        </div>
+        <p style="font-size:0.75rem; color:var(--texto-claro); text-align:center; margin-top:14px;">Depois de concluir o cadastro, não é mais possível trocar de plano por conta própria — fale com o suporte se precisar.</p>
+        <button class="btn btn-rosa" id="btnContinuarEscolhaPlano" style="width:100%; margin-top:10px;" disabled>Continuar</button>
+    </div>
+</div>
+
+<div class="overlay" id="overlayConfigInicial" style="display:none; align-items:center; justify-content:center; z-index:300;">
+    <div class="modal" style="max-width:500px; max-height:90vh; overflow-y:auto; padding:28px 24px;">
+        <div style="text-align:center; margin-bottom:16px;">
+            <div style="font-size:3.5rem; color:var(--rosa-escuro); margin-bottom:6px;">💅</div>
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.6rem; color:var(--texto); margin-bottom:4px;">Bem-vinda ao Agnayls!</h3>
+            <p class="sub" style="color:var(--texto-claro); font-size:0.95rem;">Configure seu estúdio para começar a receber agendamentos.</p>
+        </div>
+
+        <form id="formConfigInicial">
+            <div style="display:grid; gap:14px;">
+                <div class="form-group">
+                    <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;"><i class="fa-solid fa-signature"></i> Seu nome ou nome do salão *</label>
+                    <input type="text" id="configNomeInicial" placeholder="Ex: Ana Silva ou Studio da Ana" maxlength="50" required style="width:100%; padding:12px 14px; border-radius:var(--radius-xs); border:2px solid #e8dfe4; background:#fdfafb; font-size:0.95rem;">
+                </div>
+                <div class="form-group">
+                    <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;"><i class="fa-solid fa-image"></i> Foto de Perfil (opcional)</label>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                        <input type="file" id="configLogoInicial" accept="image/*" style="display:none;">
+                        <button type="button" class="btn btn-outline btn-sm" id="btnUploadLogoInicial">Escolher imagem</button>
+                        <button type="button" class="btn btn-outline btn-sm" id="btnRemoverLogoInicial">Remover foto</button>
+                        <div id="previewLogoInicial" style="width:60px; height:60px; border-radius:50%; overflow:hidden; border:2px solid var(--rosa); display:none; flex-shrink:0;">
+                            <img id="previewLogoImg" src="" alt="Foto de perfil" style="width:100%;height:100%;object-fit:cover;">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;"><i class="fa-solid fa-quote-right"></i> Slogan (opcional)</label>
+                    <input type="text" id="configSloganInicial" placeholder="Ex: Cuidando das suas unhas com carinho" maxlength="50" style="width:100%; padding:12px 14px; border-radius:var(--radius-xs); border:2px solid #e8dfe4; background:#fdfafb; font-size:0.95rem;">
+                </div>
+                <div class="form-group">
+                    <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;"><i class="fa-brands fa-whatsapp"></i> Número de WhatsApp *</label>
+                    <input type="tel" id="configWhatsappInicial" placeholder="(11) 99999-9999" maxlength="15" required style="width:100%; padding:12px 14px; border-radius:var(--radius-xs); border:2px solid #e8dfe4; background:#fdfafb; font-size:0.95rem;">
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;"><i class="fa-solid fa-spa"></i> Serviços oferecidos * (adicione pelo menos um)</label>
+                    <div id="servicosIniciaisLista" style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom:6px;"></div>
+                    <button type="button" class="btn btn-rosa btn-sm" id="btnAddServicoInicial"><i class="fa-solid fa-plus"></i> Adicionar Serviço</button>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;"><i class="fa-solid fa-credit-card"></i> Formas de pagamento * (escolha pelo menos uma)</label>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <label><input type="checkbox" class="pagamento-inicial-cb" value="Pix"> Pix</label>
+                        <label><input type="checkbox" class="pagamento-inicial-cb" value="Dinheiro"> Dinheiro</label>
+                        <label><input type="checkbox" class="pagamento-inicial-cb" value="Cartão"> Cartão</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;"><i class="fa-solid fa-clock"></i> Horário de atendimento *</label>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem;">Início: <input type="time" id="configHoraInicioInicial" required style="padding:6px 10px; border-radius:50px; border:2px solid #e8dfe4;"></label>
+                        <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem;">Fim: <input type="time" id="configHoraFimInicial" required style="padding:6px 10px; border-radius:50px; border:2px solid #e8dfe4;"></label>
+                        <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem;">Intervalo (min): <input type="number" id="configIntervaloInicial" placeholder="Ex: 60" step="15" min="30" style="width:80px; padding:6px 10px; border-radius:50px; border:2px solid #e8dfe4;"></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;"><i class="fa-solid fa-calendar-week"></i> Dias de folga fixos</label>
+                    <div class="checkbox-group-2col">
+                        <label><input type="checkbox" value="0"> Dom</label>
+                        <label><input type="checkbox" value="1"> Seg</label>
+                        <label><input type="checkbox" value="2"> Ter</label>
+                        <label><input type="checkbox" value="3"> Qua</label>
+                        <label><input type="checkbox" value="4"> Qui</label>
+                        <label><input type="checkbox" value="5"> Sex</label>
+                        <label><input type="checkbox" value="6"> Sáb</label>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-top:20px;">
+                <button type="button" class="btn btn-outline" id="btnVoltarConfigInicial" style="flex:1;">Voltar</button>
+                <button type="submit" class="btn btn-rosa" id="btnSubmitConfigInicial" style="flex:2; padding:14px; font-size:1rem; box-shadow:0 4px 16px rgba(196,125,143,0.4);">
+                    <i class="fa-solid fa-check"></i> Salvar e começar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="overlay" id="overlayPreCadastroProfissionais" style="display:none; align-items:center; justify-content:center; z-index:300;">
+    <div class="modal" style="max-width:520px; max-height:90vh; overflow-y:auto; padding:28px 24px;">
+        <div style="text-align:center; margin-bottom:16px;">
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.4rem; color:var(--texto); margin-bottom:4px;"><i class="fa-solid fa-users"></i> Cadastre suas profissionais</h3>
+            <p class="sub" style="color:var(--texto-claro); font-size:0.9rem;">O Studio precisa de pelo menos 2 — dá pra adicionar mais depois, na aba Profissionais.</p>
+        </div>
+        <div id="profissionaisPreCadastroLista" style="display:grid; gap:16px;"></div>
+        <div style="display:flex; gap:8px; margin-top:20px;">
+            <button type="button" class="btn btn-outline" id="btnVoltarPreCadastroProfissionais" style="flex:1;">Voltar</button>
+            <button type="button" class="btn btn-rosa" id="btnConcluirPreCadastroProfissionais" style="flex:2;"><i class="fa-solid fa-check"></i> Concluir cadastro</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <div class="header-clicavel" id="headerPainelClicavel" style="display:flex; align-items:center; gap:14px; cursor:pointer; flex:1;" title="Editar logo, nome e slogan">
+            <div class="header-logo" id="painelLogo"><i class="fa-solid fa-spa"></i></div>
+            <div class="header-info">
+                <h1 id="painelNome">Agnayls</h1>
+                <p class="slogan" id="painelSlogan">Agendamento inteligente</p>
+            </div>
+        </div>
+        <button id="btnSairPainel" title="Sair" style="margin-left:auto; background:none; border:none; color:var(--texto-claro); font-size:1.1rem; cursor:pointer; padding:8px;">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+    </div>
+
+    <div class="tab-content ativo" id="tab-agendamentos">
+        <div class="card">
+            <h2><i class="fa-solid fa-list-check"></i> Agendamentos</h2>
+            <div class="filtro-data">
+                <label style="font-weight:600;font-size:0.85rem;">Filtrar por data:</label>
+                <input type="date" id="filtroDataAgenda">
+                <select id="filtroProfissionalAgenda" class="somente-studio" style="display:none;padding:8px 12px;border-radius:50px;border:2px solid #e8dfe4;background:#fdfafb;font-family:'Nunito',sans-serif;font-size:0.85rem;color:var(--texto);">
+                    <option value="">Todas as profissionais</option>
+                </select>
+                <button class="btn btn-outline btn-sm" id="limparFiltroAgenda">Limpar</button>
+                <button class="btn btn-whatsapp btn-sm somente-studio" id="btnEnviarAgendaWhatsapp" type="button" style="display:none;"><i class="fa-brands fa-whatsapp"></i> Enviar Agendamentos do Dia</button>
+            </div>
+            <div class="lista-agendamentos" id="listaAgendamentos">
+                <p style="color:var(--texto-claro);text-align:center;">Nenhum agendamento encontrado.</p>
+            </div>
+            <div id="paginacaoAgendamentos"></div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-relatorios">
+        <div class="card">
+            <h2><i class="fa-solid fa-print"></i> Relatórios</h2>
+            <div class="filtro-data" style="margin-bottom:10px;">
+                <select id="relatorioTipo">
+                    <option value="diario">Relatório Diário</option>
+                    <option value="mensal">Relatório Mensal</option>
+                </select>
+                <input type="date" id="relatorioData">
+                <input type="month" id="relatorioMes" style="display:none;">
+                <button class="btn btn-rosa btn-sm" id="btnGerarRelatorio" type="button"><i class="fa-solid fa-magnifying-glass"></i> Gerar</button>
+                <button class="btn btn-outline btn-sm" id="btnImprimirRelatorio" type="button" style="display:none;"><i class="fa-solid fa-print"></i> Imprimir</button>
+            </div>
+            <div id="relatorioConteudo">
+                <div class="relatorio-vazio">Selecione o tipo de relatório e a data desejada, depois clique em "Gerar".</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content somente-studio" id="tab-profissionais" style="display:none;">
+        <div class="card">
+            <h2><i class="fa-solid fa-users"></i> Profissionais</h2>
+            <p style="font-size:0.82rem; color:var(--texto-claro); margin-bottom:12px;">Mínimo de 2 profissionais ativas. Desativar não apaga o histórico dela nem os agendamentos já feitos — só impede novos agendamentos com ela na página pública.</p>
+            <div class="lista-profissionais" id="listaProfissionais" style="display:grid; gap:10px;">
+                <p style="color:var(--texto-claro);text-align:center;">Carregando...</p>
+            </div>
+            <button class="btn btn-rosa btn-sm" id="btnAbrirModalProfissional" type="button" style="margin-top:14px;"><i class="fa-solid fa-plus"></i> Adicionar Profissional</button>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-configuracoes">
+        <div class="card" id="cardValidadePlano">
+            <h2><i class="fa-solid fa-calendar-check"></i> Validade do Plano</h2>
+            <p id="textoValidadePlano" style="font-size:0.95rem; color:var(--texto); margin:0;">Carregando...</p>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-sliders"></i> Configurações Gerais</h2>
+
+            <div class="config-section">
+                <h3><i class="fa-brands fa-whatsapp"></i> WhatsApp para notificações</h3>
+                <input type="text" id="configWhatsapp" placeholder="(11) 99999-9999" maxlength="15" style="width:100%;padding:8px 14px;border-radius:50px;border:2px solid #e8dfe4;">
+            </div>
+
+            <div class="config-section">
+                <h3><i class="fa-solid fa-spa"></i> Serviços oferecidos</h3>
+                <div class="servico-lista" id="servicosConfigLista"></div>
+                <button class="btn btn-rosa btn-sm" id="btnAbrirModalServico" type="button" style="margin-top:8px;"><i class="fa-solid fa-plus"></i> Adicionar Serviço</button>
+            </div>
+
+            <div class="config-section">
+                <h3><i class="fa-solid fa-credit-card"></i> Formas de pagamento</h3>
+                <div style="display:flex; gap:16px; flex-wrap:wrap;">
+                    <label><input type="checkbox" class="pagamento-config-cb" value="Pix"> Pix</label>
+                    <label><input type="checkbox" class="pagamento-config-cb" value="Dinheiro"> Dinheiro</label>
+                    <label><input type="checkbox" class="pagamento-config-cb" value="Cartão"> Cartão</label>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3><i class="fa-solid fa-clock"></i> Horário de atendimento</h3>
+                <div class="input-group">
+                    <label>Início:</label>
+                    <input type="time" id="configHoraInicio">
+                    <label>Fim:</label>
+                    <input type="time" id="configHoraFim">
+                    <label>Intervalo (min):</label>
+                    <input type="number" id="configIntervalo" min="30" max="180" step="15" style="width:80px;">
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3><i class="fa-solid fa-ban"></i> Dias de folga fixos</h3>
+                <div class="checkbox-group-2col" id="diasFolgaConfig">
+                    <label><input type="checkbox" value="0"> Domingo</label>
+                    <label><input type="checkbox" value="1"> Segunda</label>
+                    <label><input type="checkbox" value="2"> Terça</label>
+                    <label><input type="checkbox" value="3"> Quarta</label>
+                    <label><input type="checkbox" value="4"> Quinta</label>
+                    <label><input type="checkbox" value="5"> Sexta</label>
+                    <label><input type="checkbox" value="6"> Sábado</label>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3><i class="fa-solid fa-calendar-day"></i> Dias de folga específicos</h3>
+                <div class="input-group">
+                    <input type="date" id="inputNovaFolga">
+                    <button class="btn btn-rosa btn-sm" id="btnAddFolga">Adicionar</button>
+                </div>
+                <div class="folgas-lista" id="listaFolgas"></div>
+            </div>
+
+            <div class="config-section">
+                <h3><i class="fa-solid fa-palette"></i> Tema do Painel</h3>
+                <div class="temas-grid" id="temasGrid"></div>
+            </div>
+
+            <div class="config-section">
+                <h3><i class="fa-solid fa-share-alt"></i> Link do Painel de Agendamento</h3>
+                <div class="link-compartilhar">
+                    <input type="text" id="linkCompartilhar" readonly>
+                    <button class="btn btn-rosa btn-sm" id="btnCopiarLink"><i class="fa-regular fa-copy"></i> Copiar</button>
+                </div>
+            </div>
+
+            <div class="config-section">
+                <h3><i class="fa-solid fa-xmark-circle"></i> Cancelar agendamento futuro</h3>
+                <select id="selectCancelarAgendamento" style="width:100%;padding:8px 14px;border-radius:50px;border:2px solid #e8dfe4;">
+                    <option value="">Selecione um agendamento...</option>
+                </select>
+                <button class="btn btn-vermelho btn-sm" id="btnCancelarAgendamento" style="margin-top:8px;">Cancelar Agendamento</button>
+            </div>
+
+            <div class="config-section" style="margin-top:20px;">
+                <div class="acoes-config-grid">
+                    <button type="button" class="acao-config-tile" id="btnAbrirSuporteConfig">
+                        <i class="fa-solid fa-headset"></i>
+                        <span>Suporte</span>
+                    </button>
+                    <button type="button" class="acao-config-tile" id="btnConsultarTermos">
+                        <i class="fa-solid fa-file-contract"></i>
+                        <span>Termos</span>
+                    </button>
+                    <button type="button" class="acao-config-tile tile-perigo" id="btnExcluirConta">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Excluir Conta</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="tabs-bottom" id="tabsBottom">
+    <button class="tab-btn-bottom ativo" data-tab="agendamentos">
+        <svg viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span>Agendamentos</span>
+    </button>
+    <button class="tab-btn-bottom" data-tab="relatorios">
+        <svg viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        <span>Relatórios</span>
+    </button>
+    <button class="tab-btn-bottom somente-studio" data-tab="profissionais" style="display:none;">
+        <svg viewBox="0 0 24 24">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <span>Profissionais</span>
+    </button>
+    <button class="tab-btn-bottom" data-tab="configuracoes">
+        <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <span>Configurações</span>
+    </button>
+</div>
+
+<div class="overlay" id="overlayAcao">
+    <div class="modal" id="modalAcao">
+        <button class="modal-fechar" id="fecharAcao"><i class="fa-solid fa-xmark"></i></button>
+        <h3 id="tituloAcao"></h3>
+        <div id="conteudoAcao"></div>
+    </div>
+</div>
+
+<div class="overlay" id="overlayDetalhes">
+    <div class="modal" id="modalDetalhes">
+        <button class="modal-fechar" id="fecharDetalhes"><i class="fa-solid fa-xmark"></i></button>
+        <h3 id="detalhesTitulo">Detalhes do Agendamento</h3>
+        <div id="detalhesConteudo" style="margin-top:12px; display:grid; gap:8px; font-size:0.95rem;">
+        </div>
+        <button class="btn btn-outline" id="btnFecharDetalhes" style="margin-top:16px; width:100%;">Fechar</button>
+    </div>
+</div>
+
+<div class="overlay" id="overlayProfissional">
+    <div class="modal" id="modalProfissional" style="max-width:460px; max-height:88vh; overflow-y:auto;">
+        <button class="modal-fechar" id="fecharProfissional"><i class="fa-solid fa-xmark"></i></button>
+        <h3 id="tituloModalProfissional" style="margin-bottom:14px;"><i class="fa-solid fa-user"></i> Profissional</h3>
+        <form id="formProfissional">
+            <div class="form-group">
+                <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:4px;">Nome *</label>
+                <input type="text" id="profNome" maxlength="60" required style="width:100%; padding:10px 14px; border-radius:50px; border:2px solid #e8dfe4;">
+            </div>
+            <div class="form-group">
+                <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:4px;">WhatsApp *</label>
+                <input type="tel" id="profWhatsapp" maxlength="15" required style="width:100%; padding:10px 14px; border-radius:50px; border:2px solid #e8dfe4;">
+            </div>
+            <div class="form-group">
+                <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:4px;">Serviços que ela realiza *</label>
+                <div id="profServicosLista" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+            </div>
+            <div class="form-group">
+                <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:4px;">Folgas específicas</label>
+                <p style="font-size:0.78rem; color:var(--texto-claro); margin:-2px 0 6px;">Use para necessidades pessoais específicas dela. Os dias de folga fixos e feriados do salão valem para todas e são definidos em Configurações.</p>
+                <div class="input-group">
+                    <input type="date" id="profInputNovaFolga">
+                    <button type="button" class="btn btn-rosa btn-sm" id="profBtnAddFolga">Adicionar</button>
+                </div>
+                <div class="folgas-lista" id="profListaFolgas"></div>
+            </div>
+            <div class="form-group" id="profGrupoAtivo" style="display:none;">
+                <label style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:0.85rem; cursor:pointer;">
+                    <input type="checkbox" id="profAtivo"> Profissional ativa (recebe novos agendamentos)
+                </label>
+                <div id="profInfoAgendamentosPendentes" style="font-size:0.8rem; color:var(--texto-claro); margin-top:6px;"></div>
+                <button type="button" class="btn btn-vermelho btn-sm" id="profBtnCancelarAgendamentos" style="width:100%; margin-top:10px; display:none;">Cancelar agendamentos futuros dela</button>
+            </div>
+            <button type="submit" class="btn btn-rosa" style="width:100%; margin-top:16px;">Salvar</button>
+        </form>
+    </div>
+</div>
+
+<div class="toast" id="toastPainel"></div>
+
+<script>
+    (function agnailInicializarBloqueioFundo() {
+        function overlayEstaAberta(ov) {
+            if (ov.classList.contains('active')) return true;
+            const display = ov.style.display || getComputedStyle(ov).display;
+            return display && display !== 'none';
+        }
+        function atualizar() {
+            const algumaAberta = Array.from(document.querySelectorAll('.overlay')).some(overlayEstaAberta);
+            document.body.classList.toggle('agnail-modal-aberto', algumaAberta);
+        }
+        const observer = new MutationObserver(atualizar);
+        function observarTodas() {
+            document.querySelectorAll('.overlay').forEach(ov => {
+                observer.observe(ov, { attributes: true, attributeFilter: ['class', 'style'] });
+            });
+        }
+        observarTodas();
+        new MutationObserver(() => { observarTodas(); atualizar(); })
+            .observe(document.body, { childList: true });
+        atualizar();
+    })();
+
+    (async function() {
+        const usuarioAtual = await new Promise((resolve) => {
+            Agnayls.onAuthChange((user) => resolve(user));
+        });
+
+        if (!usuarioAtual) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        let assinaturaAtual = await Agnayls.getAssinatura(usuarioAtual.uid);
+        if (!assinaturaAtual) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const statusAcessoAtual = Agnayls.calcularStatusAcesso(assinaturaAtual);
+        if (!statusAcessoAtual.acessoLiberado) {
+            window.location.href = 'cobranca.html';
+            return;
+        }
+
+        Agnayls.db.collection('usuarios').doc(usuarioAtual.uid).set({
+            ultimoLogin: firebase.firestore.Timestamp.now()
+        }, { merge: true }).catch(() => {});
+
+        const manicureRef = Agnayls.manicureRef(usuarioAtual.uid);
+
+        function renderizarServicosIniciais(servicos) {
+            const container = document.getElementById('servicosIniciaisLista');
+            container.innerHTML = servicos.map((s, i) => `
+                <span class="servico-tag" style="background:var(--rosa-claro); border-radius:50px; padding:2px 10px; display:inline-flex; align-items:center; gap:4px; font-size:0.8rem; border:1px solid var(--rosa);">
+                    ${Agnayls.escaparHTML(s.nome)} - R$ ${s.valor.toFixed(2)} (${s.duracao}min)
+                    <button onclick="window.removerServicoInicial(${i})" style="background:none; border:none; color:var(--vermelho-escuro); cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                </span>
+            `).join('');
+            window._servicosIniciais = servicos;
+        }
+        window.removerServicoInicial = function(i) {
+            const servicos = window._servicosIniciais || [];
+            servicos.splice(i, 1);
+            renderizarServicosIniciais(servicos);
+        };
+
+        let _destinoModalServico = 'config';
+
+        function abrirModalAddServico(destino) {
+            _destinoModalServico = destino || 'config';
+            document.getElementById('formAddServico').reset();
+            document.getElementById('overlayAddServico').classList.add('active');
+        }
+        document.getElementById('btnAbrirModalServico').addEventListener('click', function() {
+            abrirModalAddServico('config');
+        });
+        document.getElementById('btnAddServicoInicial').addEventListener('click', function() {
+            abrirModalAddServico('inicial');
+        });
+        document.getElementById('fecharAddServico').addEventListener('click', function() {
+            document.getElementById('overlayAddServico').classList.remove('active');
+        });
+        document.getElementById('formAddServico').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nome = document.getElementById('novoServicoNome').value.trim();
+            const valor = parseFloat(document.getElementById('novoServicoValor').value);
+            const duracao = parseInt(document.getElementById('novoServicoDuracao').value) || 30;
+            if (!nome || isNaN(valor) || valor < 0) return;
+
+            if (_destinoModalServico === 'inicial') {
+                const servicos = window._servicosIniciais || [];
+                servicos.push({ nome, valor, duracao });
+                renderizarServicosIniciais(servicos);
+            } else {
+                config.servicos = config.servicos || [];
+                config.servicos.push({ nome, valor, duracao });
+                renderizarServicosConfig();
+                salvarConfigAuto();
+                mostrarToastPainel('Serviço adicionado!', 'sucesso');
+            }
+            document.getElementById('overlayAddServico').classList.remove('active');
+        });
+
+        document.getElementById('btnUploadLogoInicial').addEventListener('click', function() {
+            document.getElementById('configLogoInicial').click();
+        });
+        document.getElementById('configLogoInicial').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const imgData = await Agnayls.processarImagem(file);
+                document.getElementById('previewLogoImg').src = imgData;
+                document.getElementById('previewLogoInicial').style.display = 'block';
+                window._logoInicial = imgData;
+            }
+        });
+        document.getElementById('btnRemoverLogoInicial').addEventListener('click', function() {
+            document.getElementById('previewLogoImg').src = '';
+            document.getElementById('previewLogoInicial').style.display = 'none';
+            window._logoInicial = '';
+            document.getElementById('configLogoInicial').value = '';
+        });
+        Agnayls.aplicarMascaraCelular(document.getElementById('configWhatsappInicial'));
+
+        let _planoEscolhido = null;
+        let _dadosSalaoTemp = null;
+        let _resolveOnboarding = null;
+
+        function aguardarOnboardingCompleto(perfil) {
+            return new Promise((resolve) => {
+                if (perfil && perfil.perfilCompleto) { resolve(); return; }
+                _resolveOnboarding = resolve;
+                exibirModalEscolhaPlano();
+            });
+        }
+
+        function exibirModalEscolhaPlano() {
+            document.getElementById('overlayConfigInicial').style.display = 'none';
+            document.getElementById('overlayPreCadastroProfissionais').style.display = 'none';
+            document.querySelectorAll('.plano-opcao').forEach((el) => {
+                const selecionada = el.dataset.plano === _planoEscolhido;
+                el.style.borderColor = selecionada ? 'var(--rosa-escuro)' : '#e8dfe4';
+                el.style.background = selecionada ? 'var(--rosa-claro)' : 'transparent';
+                el.querySelector('input[type="radio"]').checked = selecionada;
+            });
+            document.getElementById('btnContinuarEscolhaPlano').disabled = !_planoEscolhido;
+            document.getElementById('overlayEscolhaPlano').style.display = 'flex';
+        }
+        document.querySelectorAll('.plano-opcao').forEach((el) => {
+            el.addEventListener('click', function() {
+                _planoEscolhido = this.dataset.plano;
+                document.querySelectorAll('.plano-opcao').forEach((o) => {
+                    const selecionada = (o === this);
+                    o.style.borderColor = selecionada ? 'var(--rosa-escuro)' : '#e8dfe4';
+                    o.style.background = selecionada ? 'var(--rosa-claro)' : 'transparent';
+                    o.querySelector('input[type="radio"]').checked = selecionada;
+                });
+                document.getElementById('btnContinuarEscolhaPlano').disabled = false;
+            });
+        });
+        document.getElementById('btnContinuarEscolhaPlano').addEventListener('click', function() {
+            if (!_planoEscolhido) return;
+            document.getElementById('overlayEscolhaPlano').style.display = 'none';
+            exibirModalConfiguracaoInicial();
+        });
+
+        function exibirModalConfiguracaoInicial() {
+            const overlay = document.getElementById('overlayConfigInicial');
+            overlay.style.display = 'flex';
+            overlay.style.alignItems = 'center';
+            overlay.style.justifyContent = 'center';
+
+            if (!_dadosSalaoTemp) {
+                document.getElementById('configNomeInicial').value = usuarioAtual.displayName || '';
+                document.getElementById('configSloganInicial').value = '';
+                document.getElementById('configWhatsappInicial').value = '';
+                document.getElementById('configHoraInicioInicial').value = '';
+                document.getElementById('configHoraFimInicial').value = '';
+                document.getElementById('configIntervaloInicial').value = '';
+
+                document.getElementById('previewLogoImg').src = '';
+                document.getElementById('previewLogoInicial').style.display = 'none';
+                document.getElementById('configLogoInicial').value = '';
+                window._logoInicial = '';
+
+                renderizarServicosIniciais([]);
+
+                document.querySelectorAll('.pagamento-inicial-cb').forEach(cb => { cb.checked = false; });
+                document.querySelectorAll('#overlayConfigInicial .checkbox-group-2col input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+            }
+
+            document.getElementById('btnSubmitConfigInicial').innerHTML = (_planoEscolhido === 'studio')
+                ? '<i class="fa-solid fa-arrow-right"></i> Continuar'
+                : '<i class="fa-solid fa-check"></i> Salvar e começar';
+        }
+
+        document.getElementById('btnVoltarConfigInicial').addEventListener('click', function() {
+            document.getElementById('overlayConfigInicial').style.display = 'none';
+            exibirModalEscolhaPlano();
+        });
+
+        document.getElementById('formConfigInicial').onsubmit = async function(e) {
+            e.preventDefault();
+            const nomeInformado = document.getElementById('configNomeInicial').value.trim();
+            const slogan = document.getElementById('configSloganInicial').value.trim();
+            const whatsapp = document.getElementById('configWhatsappInicial').value.replace(/\D/g, '');
+            const horarioInicio = document.getElementById('configHoraInicioInicial').value;
+            const horarioFim = document.getElementById('configHoraFimInicial').value;
+            let intervalo = parseInt(document.getElementById('configIntervaloInicial').value) || 60;
+            intervalo = Math.min(480, Math.max(15, intervalo));
+            const servicos = window._servicosIniciais || [];
+
+            const formasPagamento = [];
+            document.querySelectorAll('.pagamento-inicial-cb:checked').forEach(cb => formasPagamento.push(cb.value));
+
+            const diasFolga = [];
+            document.querySelectorAll('#overlayConfigInicial .checkbox-group-2col input[type="checkbox"]:checked').forEach(cb => diasFolga.push(parseInt(cb.value)));
+
+            if (!nomeInformado || !whatsapp || !horarioInicio || !horarioFim || servicos.length === 0 || formasPagamento.length === 0) {
+                mostrarToastPainel('Preencha todos os campos obrigatórios.', 'erro');
+                return;
+            }
+            if (whatsapp.length < 10) {
+                mostrarToastPainel('WhatsApp inválido. Use DDD + número.', 'erro');
+                return;
+            }
+
+            const imagemPerfil = window._logoInicial || '';
+            const nomeEmpresaAuto = nomeInformado;
+            const dadosSalao = {
+                nomeEmpresa: nomeEmpresaAuto,
+                slogan,
+                whatsapp,
+                imagem: imagemPerfil,
+                servicos,
+                formasPagamento,
+                diasFolga,
+                horarioInicio,
+                horarioFim,
+                intervaloMinutos: intervalo
+            };
+
+            if (_planoEscolhido === 'studio') {
+                _dadosSalaoTemp = dadosSalao;
+                document.getElementById('overlayConfigInicial').style.display = 'none';
+                exibirModalPreCadastroProfissionais();
+                return;
+            }
+
+            const btnSubmit = document.getElementById('btnSubmitConfigInicial');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'Salvando...';
+
+            try {
+                await manicureRef.collection('meta').doc('configuracoes').set({
+                    ...dadosSalao,
+                    modo: 'individual'
+                }, { merge: true });
+
+                await manicureRef.collection('meta').doc('perfil').set({
+                    nomeEmpresa: nomeEmpresaAuto,
+                    slogan,
+                    imagemPerfil,
+                    perfilCompleto: true,
+                    atualizadoEm: firebase.firestore.Timestamp.now()
+                }, { merge: true });
+
+                await manicureRef.collection('meta').doc('perfilPrivado').set({
+                    telefone: document.getElementById('configWhatsappInicial').value.trim()
+                }, { merge: true });
+            } catch (err) {
+                console.error('Erro ao salvar cadastro inicial:', err);
+                mostrarToastPainel('Erro ao salvar. Tente novamente.', 'erro');
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<i class="fa-solid fa-check"></i> Salvar e começar';
+                return;
+            }
+
+            document.getElementById('overlayConfigInicial').style.display = 'none';
+            _resolveOnboarding();
+        };
+
+        function exibirModalPreCadastroProfissionais() {
+            const container = document.getElementById('profissionaisPreCadastroLista');
+            container.innerHTML = [0, 1].map((i) => `
+                <div style="border:1px solid #e8dfe4; border-radius:var(--radius-sm); padding:14px;">
+                    <h3 style="font-size:0.95rem; margin-bottom:10px;">Profissional ${i + 1}</h3>
+                    <div class="form-group">
+                        <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:4px;">Nome *</label>
+                        <input type="text" class="prof-nome" data-i="${i}" maxlength="60" placeholder="Nome da profissional" style="width:100%; padding:10px 14px; border-radius:var(--radius-xs); border:2px solid #e8dfe4; background:#fdfafb;">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:4px;">WhatsApp *</label>
+                        <input type="tel" class="prof-whatsapp" data-i="${i}" maxlength="15" placeholder="(11) 99999-9999" style="width:100%; padding:10px 14px; border-radius:var(--radius-xs); border:2px solid #e8dfe4; background:#fdfafb;">
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:4px;">Serviços que ela realiza *</label>
+                        <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                            ${(_dadosSalaoTemp.servicos || []).map((s) => `
+                                <label style="display:flex; align-items:center; gap:5px; font-size:0.85rem; cursor:pointer;">
+                                    <input type="checkbox" class="prof-servico-cb" data-i="${i}" value="${Agnayls.escaparAtributo(s.nome)}"> ${Agnayls.escaparHTML(s.nome)}
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            document.querySelectorAll('.prof-whatsapp').forEach((input) => Agnayls.aplicarMascaraCelular(input));
+            document.getElementById('overlayPreCadastroProfissionais').style.display = 'flex';
+        }
+
+        document.getElementById('btnVoltarPreCadastroProfissionais').addEventListener('click', function() {
+            document.getElementById('overlayPreCadastroProfissionais').style.display = 'none';
+            exibirModalConfiguracaoInicial();
+        });
+
+        document.getElementById('btnConcluirPreCadastroProfissionais').addEventListener('click', async function() {
+            const profissionais = [];
+            for (let i = 0; i < 2; i++) {
+                const nome = document.querySelector(`.prof-nome[data-i="${i}"]`).value.trim();
+                const whatsapp = document.querySelector(`.prof-whatsapp[data-i="${i}"]`).value.replace(/\D/g, '');
+                const servicos = Array.from(document.querySelectorAll(`.prof-servico-cb[data-i="${i}"]:checked`)).map((cb) => cb.value);
+                if (!nome || !whatsapp || servicos.length === 0) {
+                    mostrarToastPainel(`Preencha nome, WhatsApp e pelo menos um serviço da Profissional ${i + 1}.`, 'erro');
+                    return;
+                }
+                if (whatsapp.length < 10) {
+                    mostrarToastPainel(`WhatsApp da Profissional ${i + 1} inválido. Use DDD + número.`, 'erro');
+                    return;
+                }
+                profissionais.push({ nome, whatsapp, servicos });
+            }
+
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = 'Salvando...';
+
+            try {
+                const agora = firebase.firestore.Timestamp.now();
+                const batch = Agnayls.db.batch();
+
+                batch.set(manicureRef.collection('meta').doc('configuracoes'), {
+                    ..._dadosSalaoTemp,
+                    modo: 'studio'
+                }, { merge: true });
+                batch.set(manicureRef.collection('meta').doc('perfil'), {
+                    nomeEmpresa: _dadosSalaoTemp.nomeEmpresa,
+                    slogan: _dadosSalaoTemp.slogan,
+                    imagemPerfil: _dadosSalaoTemp.imagem,
+                    perfilCompleto: true,
+                    atualizadoEm: agora
+                }, { merge: true });
+                batch.set(manicureRef.collection('meta').doc('perfilPrivado'), {
+                    telefone: _dadosSalaoTemp.whatsapp
+                }, { merge: true });
+
+                profissionais.forEach((prof) => {
+                    const ref = manicureRef.collection('profissionais').doc();
+                    batch.set(ref, { nome: prof.nome, servicos: prof.servicos, ativo: true, criadoEm: agora, atualizadoEm: agora });
+                    batch.set(ref.collection('privado').doc('dados'), { whatsapp: prof.whatsapp, folgas: [] });
+                });
+
+                await batch.commit();
+            } catch (err) {
+                console.error('Erro ao concluir o cadastro do Studio:', err);
+                mostrarToastPainel('Erro ao salvar. Tente novamente.', 'erro');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> Concluir cadastro';
+                return;
+            }
+
+            document.getElementById('overlayPreCadastroProfissionais').style.display = 'none';
+            _resolveOnboarding();
+        });
+
+        const gateInicial = document.getElementById('agnailAuthGate');
+        if (gateInicial) gateInicial.remove();
+
+        function aguardarAceiteTermos(perfil) {
+            return new Promise((resolve) => {
+                if (perfil && perfil.termosAceitos) { resolve(); return; }
+                document.getElementById('conteudoTermos').innerHTML = window.AGNAIL_TERMOS_HTML || '';
+                const overlay = document.getElementById('overlayTermos');
+                const check = document.getElementById('checkAceiteTermos');
+                const btn = document.getElementById('btnAceitarTermos');
+                overlay.classList.add('active');
+                check.checked = false;
+                btn.disabled = true;
+                check.onchange = () => { btn.disabled = !check.checked; };
+                btn.onclick = async () => {
+                    btn.disabled = true;
+                    btn.textContent = 'Salvando...';
+                    await manicureRef.collection('meta').doc('perfilPrivado').set({
+                        termosAceitos: true,
+                        termosAceitosEm: firebase.firestore.Timestamp.now()
+                    }, { merge: true });
+                    overlay.classList.remove('active');
+                    resolve();
+                };
+            });
+        }
+
+        const perfilAtual = await Agnayls.getPerfilCompleto(usuarioAtual.uid);
+        await aguardarAceiteTermos(perfilAtual);
+        await aguardarOnboardingCompleto(perfilAtual);
+
+        const configuracoesDoc = await Agnayls.getConfiguracoes(usuarioAtual.uid);
+
+        window._agnailCache = {
+            config: configuracoesDoc
+        };
+
+        document.body.classList.remove('agnail-carregando');
+
+        let _assinaturaObservada = assinaturaAtual;
+
+        function formatarDataValidadePlano(timestamp) {
+            if (!timestamp) return '-';
+            const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return d.toLocaleDateString('pt-BR');
+        }
+        function atualizarCardValidadePlano() {
+            const el = document.getElementById('textoValidadePlano');
+            if (!el || !_assinaturaObservada) return;
+            const status = Agnayls.calcularStatusAcesso(_assinaturaObservada);
+            if (status.status === 'teste_gratuito') {
+                const dias = status.diasRestantesTeste;
+                el.innerHTML = `🎁 Teste grátis — expira em <strong>${formatarDataValidadePlano(_assinaturaObservada.fimTeste)}</strong> (${dias} dia${dias === 1 ? '' : 's'} restante${dias === 1 ? '' : 's'}).`;
+            } else if (status.status === 'ativo') {
+                el.innerHTML = `✅ Plano ativo — renovação em <strong>${formatarDataValidadePlano(_assinaturaObservada.vencimento)}</strong>.`;
+            } else if (status.status === 'aguardando_aprovacao') {
+                el.innerHTML = `⏳ Pagamento em análise — assim que for aprovado, a nova validade aparece aqui.`;
+            } else {
+                el.innerHTML = `⚠️ Plano expirado. Acesse a Cobrança para regularizar.`;
+            }
+        }
+        atualizarCardValidadePlano();
+
+        manicureRef.collection('meta').doc('assinatura').onSnapshot((doc) => {
+            if (!doc.exists) return;
+            _assinaturaObservada = doc.data();
+            atualizarCardValidadePlano();
+            if (!Agnayls.calcularStatusAcesso(_assinaturaObservada).acessoLiberado) {
+                window.location.href = 'cobranca.html';
+            }
+        });
+        setInterval(() => {
+            if (!Agnayls.calcularStatusAcesso(_assinaturaObservada).acessoLiberado) {
+                window.location.href = 'cobranca.html';
+            }
+        }, 60000);
+
+        const TEMA_CACHE_KEY = 'agnail_tema_cache';
+
+        const TEMAS = [
+            { id: 'rosa', nome: 'Rosa Clássico', cores: { bg: '#fdf6f9', card: '#ffffff', rosa: '#e4a5b8', rosaEscuro: '#c47d8f', rosaClaro: '#fbeaef', lilas: '#d5c3e0', lilasClaro: '#f3ecf8', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#5d4a5c', textoClaro: '#8a7a89' } },
+            { id: 'lilas', nome: 'Lilás Suave', cores: { bg: '#f8f5fc', card: '#ffffff', rosa: '#d5c3e0', rosaEscuro: '#b89fc9', rosaClaro: '#f3ecf8', lilas: '#c9b8d4', lilasClaro: '#f0eaf5', bege: '#f5f0f0', nude: '#ede6e6', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#4a3e4a', textoClaro: '#7a6e7a' } },
+            { id: 'menta', nome: 'Menta Fresca', cores: { bg: '#f2faf5', card: '#ffffff', rosa: '#b5d8c3', rosaEscuro: '#7dab8e', rosaClaro: '#eaf7ef', lilas: '#c9d8d0', lilasClaro: '#e8f2ec', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#3d6b4a', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#2d4a3a', textoClaro: '#5a7a6a' } },
+            { id: 'azul', nome: 'Azul Céu', cores: { bg: '#f2f8fc', card: '#ffffff', rosa: '#a8c8e0', rosaEscuro: '#6f9dc0', rosaClaro: '#e6f1f8', lilas: '#c3d4e0', lilasClaro: '#ecf3f8', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#2d3e4a', textoClaro: '#5a6e7a' } }
+        ];
+
+        function getTemaAtual() {
+            const idSalvo = (config && config.tema) || localStorage.getItem(TEMA_CACHE_KEY);
+            if (idSalvo) {
+                const found = TEMAS.find(t => t.id === idSalvo);
+                if (found) return found;
+            }
+            return TEMAS[0];
+        }
+
+        function aplicarTema(tema) {
+            const c = tema.cores;
+            document.documentElement.style.setProperty('--bg', c.bg);
+            document.documentElement.style.setProperty('--card', c.card);
+            document.documentElement.style.setProperty('--rosa', c.rosa);
+            document.documentElement.style.setProperty('--rosa-escuro', c.rosaEscuro);
+            document.documentElement.style.setProperty('--rosa-claro', c.rosaClaro);
+            document.documentElement.style.setProperty('--lilas', c.lilas);
+            document.documentElement.style.setProperty('--lilas-claro', c.lilasClaro);
+            document.documentElement.style.setProperty('--bege', c.bege);
+            document.documentElement.style.setProperty('--nude', c.nude);
+            document.documentElement.style.setProperty('--verde', c.verde);
+            document.documentElement.style.setProperty('--verde-escuro', c.verdeEscuro);
+            document.documentElement.style.setProperty('--vermelho', c.vermelho);
+            document.documentElement.style.setProperty('--vermelho-escuro', c.vermelhoEscuro);
+            document.documentElement.style.setProperty('--texto', c.texto);
+            document.documentElement.style.setProperty('--texto-claro', c.textoClaro);
+        }
+
+        function carregarTema() {
+            const tema = getTemaAtual();
+            aplicarTema(tema);
+            document.querySelectorAll('.tema-option').forEach(el => {
+                el.classList.toggle('selecionado', el.dataset.temaId === tema.id);
+            });
+        }
+
+        function initTemas() {
+            const grid = document.getElementById('temasGrid');
+            grid.innerHTML = TEMAS.map(t => `
+                <div class="tema-option" data-tema-id="${t.id}" onclick="window.selecionarTema('${t.id}')">
+                    <div class="tema-bolinha" style="background: ${t.cores.rosa}; border: 2px solid ${t.cores.rosaEscuro};">
+                        <span style="opacity:0.7;">♥</span>
+                    </div>
+                    <span class="tema-nome">${t.nome}</span>
+                </div>
+            `).join('');
+            carregarTema();
+        }
+
+        window.selecionarTema = function(id) {
+            const tema = TEMAS.find(t => t.id === id);
+            if (!tema) return;
+            config.tema = id;
+            salvarConfigAuto();
+            localStorage.setItem(TEMA_CACHE_KEY, id);
+            aplicarTema(tema);
+            document.querySelectorAll('.tema-option').forEach(el => {
+                el.classList.toggle('selecionado', el.dataset.temaId === id);
+            });
+            mostrarToastPainel('Tema alterado!', 'sucesso');
+        };
+
+        function getConfig() {
+            const padrao = {
+                nomeEmpresa: '',
+                slogan: '',
+                whatsapp: '',
+                imagem: '',
+                servicos: [],
+                formasPagamento: [],
+                diasFolga: [],
+                folgas: [],
+                horarioInicio: '',
+                horarioFim: '',
+                intervaloMinutos: 60,
+            };
+            const salvo = window._agnailCache.config;
+            if (salvo) {
+                const parsed = { ...salvo };
+                if (parsed.servicos) {
+                    parsed.servicos = parsed.servicos.map(s => ({ ...s, duracao: s.duracao || 30 }));
+                }
+                if (!parsed.folgas) parsed.folgas = [];
+                return { ...padrao, ...parsed };
+            }
+            return padrao;
+        }
+
+        function setConfig(obj) {
+            window._agnailCache.config = obj;
+            manicureRef.collection('meta').doc('configuracoes').set(obj, { merge: false }).catch(err => console.error('Erro ao salvar configurações:', err));
+        }
+
+        function isConfigurado() {
+            return true;
+        }
+
+        let config = getConfig();
+        atualizarVisibilidadeStudio();
+
+        function atualizarHeaderPainel() {
+            document.getElementById('painelNome').textContent = config.nomeEmpresa;
+            document.getElementById('painelSlogan').textContent = config.slogan || '';
+            const logoEl = document.getElementById('painelLogo');
+            if (config.imagem) {
+                logoEl.innerHTML = `<img src="${Agnayls.escaparAtributo(config.imagem)}" alt="Logo">`;
+            } else {
+                logoEl.innerHTML = '<i class="fa-solid fa-spa"></i>';
+            }
+        }
+        atualizarHeaderPainel();
+
+        const tabBtns = document.querySelectorAll('.tab-btn-bottom');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('ativo'));
+                btn.classList.add('ativo');
+                const tabId = 'tab-' + btn.dataset.tab;
+                tabContents.forEach(tc => tc.classList.remove('ativo'));
+                document.getElementById(tabId).classList.add('ativo');
+                if (btn.dataset.tab === 'agendamentos') carregarAgendamentos();
+                if (btn.dataset.tab === 'relatorios') iniciarAbaRelatorios();
+                if (btn.dataset.tab === 'profissionais') carregarProfissionais();
+                if (btn.dataset.tab === 'configuracoes') carregarConfiguracoes();
+            });
+        });
+
+        let paginadorAgendamentos = null;
+        let filtroDataAgendaAtual = null;
+        let filtroProfissionalAgendaAtual = null;
+        let itensPaginaAtualAgendamentos = [];
+
+        function construirQueryAgendamentos(filtroData, filtroProfissionalId) {
+            let q;
+            if (filtroData) {
+                q = manicureRef.collection('agendamentos').where('data', '==', filtroData);
+            } else {
+                q = manicureRef.collection('agendamentos').where('status', '==', 'agendado').orderBy('data', 'asc');
+            }
+            if (filtroProfissionalId) {
+                q = q.where('professionalId', '==', filtroProfissionalId);
+            }
+            return q;
+        }
+
+        function ordenarAgendamentosLocalmente(lista) {
+            return lista.slice().sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
+        }
+
+        async function carregarAgendamentos(filtroData = null, filtroProfissionalId = null) {
+            const lista = document.getElementById('listaAgendamentos');
+            filtroDataAgendaAtual = filtroData;
+            filtroProfissionalAgendaAtual = filtroProfissionalId;
+            paginadorAgendamentos = Agnayls.criarPaginador(construirQueryAgendamentos(filtroData, filtroProfissionalId), 20);
+            lista.innerHTML = '<p style="color:var(--texto-claro);text-align:center;">Carregando...</p>';
+            document.getElementById('paginacaoAgendamentos').innerHTML = '';
+            try {
+                itensPaginaAtualAgendamentos = ordenarAgendamentosLocalmente(await paginadorAgendamentos.primeira());
+            } catch (e) {
+                console.error('Erro ao carregar agendamentos:', e);
+                lista.innerHTML = '<p style="color:var(--vermelho-escuro);text-align:center;">Não foi possível carregar os agendamentos. Tente novamente.</p>';
+                return;
+            }
+            renderizarListaAgendamentos(itensPaginaAtualAgendamentos);
+            Agnayls.renderizarControlesPaginacao('paginacaoAgendamentos', paginadorAgendamentos, irParaPaginaAnteriorAgendamentos, irParaProximaPaginaAgendamentos);
+        }
+
+        async function irParaProximaPaginaAgendamentos() {
+            if (!paginadorAgendamentos || !paginadorAgendamentos.temProxima()) return;
+            itensPaginaAtualAgendamentos = ordenarAgendamentosLocalmente(await paginadorAgendamentos.proxima());
+            renderizarListaAgendamentos(itensPaginaAtualAgendamentos);
+            Agnayls.renderizarControlesPaginacao('paginacaoAgendamentos', paginadorAgendamentos, irParaPaginaAnteriorAgendamentos, irParaProximaPaginaAgendamentos);
+        }
+        async function irParaPaginaAnteriorAgendamentos() {
+            if (!paginadorAgendamentos || !paginadorAgendamentos.temAnterior()) return;
+            itensPaginaAtualAgendamentos = ordenarAgendamentosLocalmente(await paginadorAgendamentos.anterior());
+            renderizarListaAgendamentos(itensPaginaAtualAgendamentos);
+            Agnayls.renderizarControlesPaginacao('paginacaoAgendamentos', paginadorAgendamentos, irParaPaginaAnteriorAgendamentos, irParaProximaPaginaAgendamentos);
+        }
+
+        async function recarregarListaAgendamentos() {
+            await carregarAgendamentos(filtroDataAgendaAtual, filtroProfissionalAgendaAtual);
+        }
+
+        function renderizarListaAgendamentos(agendamentos) {
+            const lista = document.getElementById('listaAgendamentos');
+            if (agendamentos.length === 0) {
+                lista.innerHTML = '<p style="color:var(--texto-claro);text-align:center;">Nenhum agendamento encontrado.</p>';
+                return;
+            }
+
+            lista.innerHTML = agendamentos.map(a => {
+                const dataObj = new Date(a.data + 'T' + a.horario);
+                const agora = new Date();
+                const diffMin = (agora - dataObj) / 60000;
+                const podeAcao = diffMin >= 30 && a.status === 'agendado';
+                let statusClass = 'status-agendado';
+                if (a.status === 'concluido') statusClass = 'status-concluido';
+                if (a.status === 'cancelado') statusClass = 'status-cancelado';
+
+                const nomeSeguro = Agnayls.escaparHTML(a.nome);
+                const servicosStr = Agnayls.escaparHTML((a.servicos || []).join(', '));
+                const tipoAtend = Agnayls.escaparHTML(a.tipoAtendimento || 'No local');
+                const enderecoStr = a.endereco ? '• End: ' + Agnayls.escaparHTML(a.endereco) : '';
+                const obsStr = a.observacoes ? '• Obs: ' + Agnayls.escaparHTML(a.observacoes) : '';
+                const formaPagamentoSeguro = Agnayls.escaparHTML(a.formaPagamento);
+                const statusSeguro = Agnayls.escaparHTML(a.status);
+
+                return `
+                <div class="agendamento-item">
+                  <div class="agendamento-info" onclick="window.abrirDetalhes('${a.id}')">
+                    <strong>${nomeSeguro}</strong>
+                    <div class="detalhes">
+                      ${new Date(a.data+'T00:00:00').toLocaleDateString('pt-BR')} às ${a.horario} • ${servicosStr}<br>
+                      💰 R$ ${a.valor.toFixed(2)} • ${formaPagamentoSeguro} ${obsStr}
+                      ${tipoAtend} ${enderecoStr}
+                    </div>
+                  </div>
+                  <span class="status-badge ${statusClass}">${statusSeguro}</span>
+                  ${podeAcao ? `
+                  <div class="acoes">
+                    <button class="btn btn-verde btn-sm" onclick="window.concluirAgendamento('${a.id}')">Concluir</button>
+                    <button class="btn btn-vermelho btn-sm" onclick="window.cancelarAgendamentoPainel('${a.id}')">Cancelar</button>
+                    <button class="btn btn-outline btn-sm" onclick="window.abrirDetalhes('${a.id}')"><i class="fa-regular fa-eye"></i></button>
+                  </div>` : (a.status==='agendado' ? '<span style="font-size:0.7rem;color:var(--texto-claro);">Ações em breve</span>' : '')}
+                </div>`;
+            }).join('');
+        }
+
+        window.abrirDetalhes = function(id) {
+            const ag = itensPaginaAtualAgendamentos.find(a => a.id === id);
+            if (!ag) return;
+
+            const overlay = document.getElementById('overlayDetalhes');
+            const titulo = document.getElementById('detalhesTitulo');
+            const conteudo = document.getElementById('detalhesConteudo');
+
+            titulo.textContent = `Detalhes - ${ag.nome}`;
+
+            const dataFormatada = new Date(ag.data + 'T00:00:00').toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            const nomeSeguro = Agnayls.escaparHTML(ag.nome);
+            const telefoneDigitos = (ag.telefone || '').replace(/\D/g, '');
+            const telefoneSeguro = Agnayls.escaparHTML(ag.telefone);
+            const servicosSeguro = Agnayls.escaparHTML((ag.servicos || []).join(', '));
+            const pagamentoSeguro = Agnayls.escaparHTML(ag.formaPagamento);
+            const tipoAtendSeguro = Agnayls.escaparHTML(ag.tipoAtendimento || 'No local');
+            const obsSeguro = Agnayls.escaparHTML(ag.observacoes || 'Nenhuma');
+            const statusSeguro = Agnayls.escaparHTML(ag.status);
+            const idSeguro = Agnayls.escaparHTML(ag.id);
+
+            let html = `
+                <p><strong>👤 Cliente:</strong> ${nomeSeguro}</p>
+                <p><strong>📱 WhatsApp:</strong> <a href="https://wa.me/55${telefoneDigitos}" target="_blank">${telefoneSeguro}</a></p>
+                <p><strong>📅 Data:</strong> ${dataFormatada}</p>
+                <p><strong>⏰ Horário:</strong> ${Agnayls.escaparHTML(ag.horario)}</p>
+                <p><strong>💅 Serviços:</strong> ${servicosSeguro}</p>
+                <p><strong>💰 Valor:</strong> R$ ${ag.valor.toFixed(2)}</p>
+                <p><strong>💳 Pagamento:</strong> ${pagamentoSeguro}</p>
+                <p><strong>🏠 Atendimento:</strong> ${tipoAtendSeguro}</p>
+            `;
+
+            if (ag.endereco) {
+                const enderecoEnc = encodeURIComponent(ag.endereco);
+                html += `<p><strong>📍 Endereço:</strong> <a href="https://www.google.com/maps/search/?api=1&query=${enderecoEnc}" target="_blank">${Agnayls.escaparHTML(ag.endereco)}</a></p>`;
+            } else {
+                html += `<p><strong>📍 Endereço:</strong> Não informado</p>`;
+            }
+
+            html += `
+                <p><strong>📝 Observações:</strong> ${obsSeguro}</p>
+                <p><strong>📌 Status:</strong> <span class="status-badge ${ag.status === 'agendado' ? 'status-agendado' : ag.status === 'concluido' ? 'status-concluido' : 'status-cancelado'}">${statusSeguro}</span></p>
+                <p style="font-size:0.75rem; color:var(--texto-claro); margin-top:4px;">ID: ${idSeguro}</p>
+            `;
+
+            conteudo.innerHTML = html;
+            overlay.classList.add('active');
+        };
+
+        document.getElementById('fecharDetalhes').addEventListener('click', () => {
+            document.getElementById('overlayDetalhes').classList.remove('active');
+        });
+        document.getElementById('btnFecharDetalhes').addEventListener('click', () => {
+            document.getElementById('overlayDetalhes').classList.remove('active');
+        });
+        document.getElementById('overlayDetalhes').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+
+        window.concluirAgendamento = function(id) {
+            const ag = itensPaginaAtualAgendamentos.find(a => a.id === id);
+            if (!ag) return;
+            abrirModalConclusao(ag);
+        };
+
+        window.cancelarAgendamentoPainel = async function(id) {
+            const ag = itensPaginaAtualAgendamentos.find(a => a.id === id);
+            if (!ag) return;
+            if (confirm('Tem certeza que deseja cancelar este agendamento? Esta ação não pode ser desfeita.')) {
+                try {
+                    await manicureRef.collection('agendamentos').doc(id).update({ status: 'cancelado' });
+                } catch (e) {
+                    console.error('Erro ao cancelar agendamento:', e);
+                    mostrarToastPainel('Erro ao cancelar. Tente novamente.', 'erro');
+                    return;
+                }
+                try {
+                    await Agnayls.liberarSlotsAgendamento(usuarioAtual.uid, ag, ag.professionalId);
+                } catch (e) {
+                    console.error('Erro ao liberar horário na agenda pública:', e);
+                }
+                await recarregarListaAgendamentos();
+                mostrarToastPainel('Agendamento cancelado.', 'sucesso');
+            }
+        };
+
+        function abrirModalConclusao(ag) {
+            const overlay = document.getElementById('overlayAcao');
+            document.getElementById('tituloAcao').textContent = 'Concluir Agendamento';
+            document.getElementById('conteudoAcao').innerHTML = `
+              <p><strong>Cliente:</strong> ${Agnayls.escaparHTML(ag.nome)}</p>
+              <p><strong>Serviços:</strong> ${Agnayls.escaparHTML((ag.servicos || []).join(', '))}</p>
+              <p><strong>Valor base:</strong> R$ ${ag.valor.toFixed(2)}</p>
+              <div class="input-group">
+                <label>Valor extra (R$):</label>
+                <input type="number" id="inputValorExtra" placeholder="0.00" step="0.01" min="0" value="0">
+              </div>
+              <div class="input-group">
+                <label>Desconto (R$):</label>
+                <input type="number" id="inputDesconto" placeholder="0.00" step="0.01" min="0" value="0">
+              </div>
+              <p><strong>Total final:</strong> R$ <span id="totalFinalCalc">${ag.valor.toFixed(2)}</span></p>
+              <button class="btn btn-verde" id="btnConfirmarConclusao">Confirmar Conclusão</button>
+            `;
+            overlay.classList.add('active');
+
+            const extraInput = document.getElementById('inputValorExtra');
+            const descInput = document.getElementById('inputDesconto');
+            const totalSpan = document.getElementById('totalFinalCalc');
+            const atualizarTotal = () => {
+                const extra = parseFloat(extraInput.value) || 0;
+                const desc = parseFloat(descInput.value) || 0;
+                const total = ag.valor + extra - desc;
+                totalSpan.textContent = Math.max(0, total).toFixed(2);
+            };
+            extraInput.addEventListener('input', atualizarTotal);
+            descInput.addEventListener('input', atualizarTotal);
+
+            document.getElementById('btnConfirmarConclusao').onclick = async function() {
+                const extra = parseFloat(extraInput.value) || 0;
+                const desc = parseFloat(descInput.value) || 0;
+                const totalFinal = Math.max(0, ag.valor + extra - desc);
+                const btnConfirmar = this;
+                btnConfirmar.disabled = true;
+                btnConfirmar.textContent = 'Salvando...';
+
+                const novoFinanceiroId = 'fin_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+                try {
+                    const batch = Agnayls.db.batch();
+                    batch.update(manicureRef.collection('agendamentos').doc(ag.id), {
+                        status: 'concluido',
+                        valorFinal: totalFinal,
+                        valorExtra: extra,
+                        desconto: desc
+                    });
+                    batch.set(manicureRef.collection('financeiro').doc(novoFinanceiroId), {
+                        agendamentoId: ag.id,
+                        data: ag.data,
+                        horario: ag.horario,
+                        cliente: ag.nome,
+                        servicos: ag.servicos,
+                        valor: totalFinal,
+                        formaPagamento: ag.formaPagamento,
+                        observacoes: ag.observacoes,
+                        professionalId: ag.professionalId || null,
+                        dataRegistro: new Date().toISOString()
+                    });
+                    await batch.commit();
+                } catch (e) {
+                    console.error('Erro ao concluir agendamento:', e);
+                    mostrarToastPainel('Erro ao concluir. Tente novamente.', 'erro');
+                    btnConfirmar.disabled = false;
+                    btnConfirmar.textContent = 'Confirmar Conclusão';
+                    return;
+                }
+                overlay.classList.remove('active');
+                await recarregarListaAgendamentos();
+                mostrarToastPainel('Atendimento concluído e registrado no financeiro!', 'sucesso');
+            };
+        }
+
+        document.getElementById('fecharAcao').addEventListener('click', () => {
+            document.getElementById('overlayAcao').classList.remove('active');
+        });
+        document.getElementById('overlayAcao').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+
+        document.getElementById('filtroDataAgenda').addEventListener('change', function() {
+            carregarAgendamentos(this.value || null, filtroProfissionalAgendaAtual);
+        });
+        document.getElementById('filtroProfissionalAgenda').addEventListener('change', function() {
+            carregarAgendamentos(filtroDataAgendaAtual, this.value || null);
+        });
+        document.getElementById('limparFiltroAgenda').addEventListener('click', () => {
+            document.getElementById('filtroDataAgenda').value = '';
+            document.getElementById('filtroProfissionalAgenda').value = '';
+            carregarAgendamentos();
+        });
+
+        function montarMensagemAgendamentosDoDia(dataStr, agendamentos, nomeProfissional) {
+            const dataFormatada = new Date(dataStr + 'T00:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+            const itensOrdenados = agendamentos.slice().sort((a, b) => (a.horario || '').localeCompare(b.horario || ''));
+            let msg = `Olá, ${nomeProfissional}! 📋 Seus agendamentos de *${dataFormatada}*:\n\n`;
+            msg += itensOrdenados.map((a) =>
+                `⏰ *${a.horario}* — ${a.nome}\n💅 ${(a.servicos || []).join(', ')}\n💰 R$ ${(a.valor || 0).toFixed(2)}`
+            ).join('\n\n');
+            msg += `\n\n_Total: ${agendamentos.length} agendamento(s)_`;
+            return msg;
+        }
+
+        async function enviarAgendamentosDoDiaPeloWhatsapp() {
+            const dataStr = document.getElementById('filtroDataAgenda').value;
+            if (!dataStr) {
+                mostrarToastPainel('Selecione uma data para enviar a lista.', 'erro');
+                return;
+            }
+            const profissionalId = document.getElementById('filtroProfissionalAgenda').value;
+            if (!profissionalId) {
+                mostrarToastPainel('Selecione uma profissional para enviar a lista.', 'erro');
+                return;
+            }
+
+            const btn = document.getElementById('btnEnviarAgendaWhatsapp');
+            const textoOriginalBtn = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparando...';
+            try {
+                const [profissionalPublico, profissionalPrivado] = await Promise.all([
+                    Agnayls.getProfissionalPublico(usuarioAtual.uid, profissionalId),
+                    Agnayls.getProfissionalPrivado(usuarioAtual.uid, profissionalId)
+                ]);
+                const numeroWhatsapp = ((profissionalPrivado && profissionalPrivado.whatsapp) || '').replace(/\D/g, '');
+                if (!numeroWhatsapp) {
+                    mostrarToastPainel('Esta profissional não tem WhatsApp cadastrado.', 'erro');
+                    return;
+                }
+                const snap = await manicureRef.collection('agendamentos')
+                    .where('data', '==', dataStr)
+                    .where('status', '==', 'agendado')
+                    .where('professionalId', '==', profissionalId)
+                    .get();
+                const agendamentosDia = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (agendamentosDia.length === 0) {
+                    mostrarToastPainel('Nenhum agendamento encontrado para esta data.', 'erro');
+                    return;
+                }
+                const nomeProfissional = (profissionalPublico && profissionalPublico.nome) || 'profissional';
+                const mensagem = montarMensagemAgendamentosDoDia(dataStr, agendamentosDia, nomeProfissional);
+                window.open('https://wa.me/' + numeroWhatsapp + '?text=' + encodeURIComponent(mensagem), '_blank');
+            } catch (e) {
+                console.error('Erro ao preparar lista de agendamentos para WhatsApp:', e);
+                mostrarToastPainel('Erro ao preparar a lista. Tente novamente.', 'erro');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = textoOriginalBtn;
+            }
+        }
+        document.getElementById('btnEnviarAgendaWhatsapp').addEventListener('click', enviarAgendamentosDoDiaPeloWhatsapp);
+
+        function iniciarAbaRelatorios() {
+            const inputData = document.getElementById('relatorioData');
+            const inputMes = document.getElementById('relatorioMes');
+            const hoje = new Date();
+            if (!inputData.value) {
+                inputData.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+            }
+            if (!inputMes.value) {
+                inputMes.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+            }
+            executarGeracaoRelatorio();
+        }
+
+        document.getElementById('relatorioTipo').addEventListener('change', function() {
+            const ehMensal = this.value === 'mensal';
+            document.getElementById('relatorioData').style.display = ehMensal ? 'none' : '';
+            document.getElementById('relatorioMes').style.display = ehMensal ? '' : 'none';
+        });
+
+        async function garantirProfissionaisCarregadasParaRelatorio() {
+            if (config.modo === 'studio' && profissionaisCache.length === 0) {
+                try {
+                    profissionaisCache = await Agnayls.listarProfissionais(usuarioAtual.uid);
+                } catch (e) {
+                    console.error('Erro ao carregar profissionais para o relatório:', e);
+                }
+            }
+        }
+
+        function nomeDaFuncionariaRelatorio(professionalId) {
+            if (!professionalId) return 'Sem profissional definida';
+            const p = profissionaisCache.find((x) => x.id === professionalId);
+            return p ? p.nome : 'Profissional removida';
+        }
+
+        function somaValoresRelatorio(itens) {
+            return itens.reduce((s, f) => s + (f.valor || 0), 0);
+        }
+
+        function agruparPorFuncionariaRelatorio(itens) {
+            const grupos = {};
+            itens.forEach(f => {
+                const chave = f.professionalId || '_sem';
+                (grupos[chave] = grupos[chave] || []).push(f);
+            });
+            return Object.keys(grupos)
+                .map(chave => ({ nome: nomeDaFuncionariaRelatorio(chave === '_sem' ? null : chave), itens: grupos[chave] }))
+                .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+        }
+
+        function montarTabelaDiariaRelatorio(itens) {
+            const linhas = itens.map(f => `
+                <tr>
+                    <td>${Agnayls.escaparHTML(f.cliente)}</td>
+                    <td>${new Date(f.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                    <td>${Agnayls.escaparHTML(f.horario)}</td>
+                    <td class="valor">R$ ${(f.valor || 0).toFixed(2)}</td>
+                </tr>`).join('');
+            return `
+                <div class="tabela-relatorio-wrap">
+                    <table class="tabela-relatorio">
+                        <thead><tr><th>Cliente</th><th>Data</th><th>Horário</th><th class="valor">Valor</th></tr></thead>
+                        <tbody>${linhas}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        function montarBlocosMensaisPorDia(itens) {
+            const porDia = {};
+            itens.forEach(f => { (porDia[f.data] = porDia[f.data] || []).push(f); });
+            return Object.keys(porDia).sort().map(dia => {
+                const itensDia = porDia[dia].slice().sort((a, b) => (a.horario || '').localeCompare(b.horario || ''));
+                const linhas = itensDia.map(f => `
+                    <tr>
+                        <td>${Agnayls.escaparHTML(f.cliente)}</td>
+                        <td class="valor">R$ ${(f.valor || 0).toFixed(2)}</td>
+                    </tr>`).join('');
+                const dataFormatada = new Date(dia + 'T00:00:00').toLocaleDateString('pt-BR');
+                return `
+                    <div class="relatorio-dia-titulo">${dataFormatada}</div>
+                    <div class="tabela-relatorio-wrap">
+                        <table class="tabela-relatorio">
+                            <thead><tr><th>Cliente</th><th class="valor">Valor</th></tr></thead>
+                            <tbody>${linhas}</tbody>
+                        </table>
+                    </div>
+                    <div class="relatorio-subtotal">Subtotal do dia: R$ ${somaValoresRelatorio(itensDia).toFixed(2)}</div>`;
+            }).join('');
+        }
+
+        function renderizarCabecalhoRelatorio(subtitulo) {
+            return `
+                <div class="relatorio-header">
+                    <h2>${Agnayls.escaparHTML(config.nomeEmpresa || 'Agnayls')}</h2>
+                    <p>${subtitulo}</p>
+                </div>`;
+        }
+
+        async function gerarRelatorioDiario(dataStr) {
+            await garantirProfissionaisCarregadasParaRelatorio();
+            const snap = await manicureRef.collection('financeiro').where('data', '==', dataStr).get();
+            const itens = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                .sort((a, b) => (a.horario || '').localeCompare(b.horario || ''));
+            const dataFormatada = new Date(dataStr + 'T00:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+            let corpo;
+            if (itens.length === 0) {
+                corpo = '<div class="relatorio-vazio">Nenhum atendimento concluído nesta data.</div>';
+            } else if (config.modo === 'studio') {
+                const grupos = agruparPorFuncionariaRelatorio(itens);
+                corpo = grupos.map(g => `
+                    <div class="relatorio-secao">
+                        <h3>${Agnayls.escaparHTML(g.nome)}</h3>
+                        ${montarTabelaDiariaRelatorio(g.itens)}
+                        <div class="relatorio-subtotal">Subtotal ${Agnayls.escaparHTML(g.nome)}: R$ ${somaValoresRelatorio(g.itens).toFixed(2)}</div>
+                    </div>`).join('');
+                corpo += `<div class="relatorio-total-geral">Total geral do dia: R$ ${somaValoresRelatorio(itens).toFixed(2)}</div>`;
+            } else {
+                corpo = montarTabelaDiariaRelatorio(itens) +
+                    `<div class="relatorio-total-geral">Total do dia: R$ ${somaValoresRelatorio(itens).toFixed(2)}</div>`;
+            }
+
+            document.getElementById('relatorioConteudo').innerHTML = `
+                <div id="relatorioImpressao">
+                    ${renderizarCabecalhoRelatorio('Relatório Diário — ' + dataFormatada)}
+                    ${corpo}
+                </div>`;
+        }
+
+        async function gerarRelatorioMensal(anoMes) {
+            await garantirProfissionaisCarregadasParaRelatorio();
+            const snap = await manicureRef.collection('financeiro')
+                .where('data', '>=', anoMes + '-01')
+                .where('data', '<=', anoMes + '-31')
+                .get();
+            const itens = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+            const [anoNum, mesNum] = anoMes.split('-').map(Number);
+            const nomeMes = new Date(anoNum, mesNum - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+            let corpo;
+            if (itens.length === 0) {
+                corpo = '<div class="relatorio-vazio">Nenhum atendimento concluído neste mês.</div>';
+            } else if (config.modo === 'studio') {
+                const grupos = agruparPorFuncionariaRelatorio(itens);
+                corpo = grupos.map(g => `
+                    <div class="relatorio-secao">
+                        <h3>${Agnayls.escaparHTML(g.nome)}</h3>
+                        ${montarBlocosMensaisPorDia(g.itens)}
+                        <div class="relatorio-subtotal" style="font-size:0.95rem;">Subtotal ${Agnayls.escaparHTML(g.nome)}: R$ ${somaValoresRelatorio(g.itens).toFixed(2)}</div>
+                    </div>`).join('');
+                corpo += `<div class="relatorio-total-geral">Total geral do mês: R$ ${somaValoresRelatorio(itens).toFixed(2)}</div>`;
+            } else {
+                corpo = montarBlocosMensaisPorDia(itens) +
+                    `<div class="relatorio-total-geral">Total do mês: R$ ${somaValoresRelatorio(itens).toFixed(2)}</div>`;
+            }
+
+            document.getElementById('relatorioConteudo').innerHTML = `
+                <div id="relatorioImpressao">
+                    ${renderizarCabecalhoRelatorio('Relatório Mensal — ' + nomeMes)}
+                    ${corpo}
+                </div>`;
+        }
+
+        async function executarGeracaoRelatorio() {
+            const tipo = document.getElementById('relatorioTipo').value;
+            const btn = document.getElementById('btnGerarRelatorio');
+            const textoOriginal = btn.innerHTML;
+            document.getElementById('btnImprimirRelatorio').style.display = 'none';
+            document.getElementById('relatorioConteudo').innerHTML = '<div class="relatorio-vazio">Gerando relatório...</div>';
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gerando...';
+            try {
+                if (tipo === 'mensal') {
+                    const mes = document.getElementById('relatorioMes').value;
+                    if (!mes) { mostrarToastPainel('Selecione o mês.', 'erro'); return; }
+                    await gerarRelatorioMensal(mes);
+                } else {
+                    const data = document.getElementById('relatorioData').value;
+                    if (!data) { mostrarToastPainel('Selecione a data.', 'erro'); return; }
+                    await gerarRelatorioDiario(data);
+                }
+                document.getElementById('btnImprimirRelatorio').style.display = '';
+            } catch (e) {
+                console.error('Erro ao gerar relatório:', e);
+                document.getElementById('relatorioConteudo').innerHTML = '<div class="relatorio-vazio">Não foi possível gerar o relatório. Tente novamente.</div>';
+                mostrarToastPainel('Erro ao gerar relatório.', 'erro');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+            }
+        }
+
+        document.getElementById('btnGerarRelatorio').addEventListener('click', executarGeracaoRelatorio);
+        document.getElementById('btnImprimirRelatorio').addEventListener('click', function() {
+            window.print();
+        });
+
+        let profissionaisCache = [];
+        let _profissionalEditandoId = null;
+        let _profFolgasTemp = [];
+
+        function atualizarVisibilidadeStudio() {
+            const ehStudio = config.modo === 'studio';
+            document.querySelectorAll('.somente-studio').forEach((el) => {
+                el.style.display = ehStudio ? '' : 'none';
+            });
+        }
+
+        async function carregarProfissionais() {
+            const container = document.getElementById('listaProfissionais');
+            if (container) container.innerHTML = '<p style="color:var(--texto-claro);text-align:center;">Carregando...</p>';
+            try {
+                const publicos = await Agnayls.listarProfissionais(usuarioAtual.uid);
+                profissionaisCache = await Promise.all(publicos.map(async (p) => {
+                    const privado = await Agnayls.getProfissionalPrivado(usuarioAtual.uid, p.id).catch(() => null);
+                    return { ...p, ...(privado || {}) };
+                }));
+            } catch (e) {
+                console.error('Erro ao carregar profissionais:', e);
+                profissionaisCache = [];
+            }
+            renderizarListaProfissionais();
+            popularFiltrosProfissional();
+        }
+
+        function renderizarListaProfissionais() {
+            const container = document.getElementById('listaProfissionais');
+            if (!container) return;
+            if (profissionaisCache.length === 0) {
+                container.innerHTML = '<p style="color:var(--texto-claro);text-align:center;">Nenhuma profissional cadastrada ainda.</p>';
+                return;
+            }
+            container.innerHTML = profissionaisCache.map((p) => `
+                <div class="agendamento-item">
+                    <div class="agendamento-info">
+                        <strong>${Agnayls.escaparHTML(p.nome)}</strong>
+                        <div class="detalhes">${Agnayls.escaparHTML((p.servicos || []).join(', ') || 'Nenhum serviço selecionado')}${p.whatsapp ? ' • ' + Agnayls.escaparHTML(Agnayls.mascararCelular(p.whatsapp)) : ''}</div>
+                    </div>
+                    <span class="status-badge ${p.ativo ? 'status-concluido' : 'status-cancelado'}">${p.ativo ? 'Ativa' : 'Inativa'}</span>
+                    <div class="acoes">
+                        <button class="btn btn-outline btn-sm" onclick="window.editarProfissional('${p.id}')"><i class="fa-regular fa-pen-to-square"></i> Editar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function popularFiltrosProfissional() {
+            const opcoes = '<option value="">Todas as profissionais</option>' +
+                profissionaisCache.map((p) => `<option value="${Agnayls.escaparAtributo(p.id)}">${Agnayls.escaparHTML(p.nome)}</option>`).join('');
+            const selAgenda = document.getElementById('filtroProfissionalAgenda');
+            if (selAgenda) selAgenda.innerHTML = opcoes;
+        }
+
+        function popularServicosProfissionalModal(servicosSelecionados) {
+            const container = document.getElementById('profServicosLista');
+            const selecionados = servicosSelecionados || [];
+            container.innerHTML = (config.servicos || []).map((s) => `
+                <label style="display:flex; align-items:center; gap:5px; font-size:0.85rem; cursor:pointer;">
+                    <input type="checkbox" class="prof-modal-servico-cb" value="${Agnayls.escaparAtributo(s.nome)}" ${selecionados.includes(s.nome) ? 'checked' : ''}> ${Agnayls.escaparHTML(s.nome)}
+                </label>
+            `).join('');
+        }
+
+        function renderizarFolgasProfissionalModal() {
+            const lista = document.getElementById('profListaFolgas');
+            if (_profFolgasTemp.length === 0) {
+                lista.innerHTML = '<span style="color:var(--texto-claro);font-size:0.85rem;">Nenhuma data de folga adicionada.</span>';
+                return;
+            }
+            lista.innerHTML = _profFolgasTemp.map((data) => `
+                <span class="folga-item">
+                    ${new Date(data + 'T00:00:00').toLocaleDateString('pt-BR')}
+                    <button type="button" onclick="window.removerFolgaProfissionalModal('${Agnayls.escaparAtributo(data)}')" title="Remover"><i class="fa-solid fa-xmark"></i></button>
+                </span>
+            `).join('');
+        }
+        window.removerFolgaProfissionalModal = function(data) {
+            _profFolgasTemp = _profFolgasTemp.filter((d) => d !== data);
+            renderizarFolgasProfissionalModal();
+        };
+        document.getElementById('profBtnAddFolga').addEventListener('click', () => {
+            const input = document.getElementById('profInputNovaFolga');
+            const data = input.value;
+            if (!data) { mostrarToastPainel('Selecione uma data.', 'erro'); return; }
+            if (_profFolgasTemp.includes(data)) { mostrarToastPainel('Esta data já está na lista.', 'erro'); return; }
+            _profFolgasTemp = _profFolgasTemp.concat(data);
+            renderizarFolgasProfissionalModal();
+            input.value = '';
+        });
+
+        Agnayls.aplicarMascaraCelular(document.getElementById('profWhatsapp'));
+
+        function abrirModalProfissional(profissional) {
+            _profissionalEditandoId = profissional ? profissional.id : null;
+            document.getElementById('tituloModalProfissional').innerHTML = profissional
+                ? '<i class="fa-solid fa-user"></i> Editar Profissional'
+                : '<i class="fa-solid fa-user-plus"></i> Adicionar Profissional';
+            document.getElementById('profNome').value = profissional ? profissional.nome : '';
+            document.getElementById('profWhatsapp').value = profissional ? Agnayls.mascararCelular(profissional.whatsapp || '') : '';
+            popularServicosProfissionalModal(profissional ? profissional.servicos : []);
+            _profFolgasTemp = profissional ? (profissional.folgas || []).slice() : [];
+            renderizarFolgasProfissionalModal();
+
+            const grupoAtivo = document.getElementById('profGrupoAtivo');
+            const btnCancelarAg = document.getElementById('profBtnCancelarAgendamentos');
+            const infoAg = document.getElementById('profInfoAgendamentosPendentes');
+            if (profissional) {
+                grupoAtivo.style.display = 'block';
+                document.getElementById('profAtivo').checked = profissional.ativo !== false;
+                infoAg.textContent = 'Verificando agendamentos pendentes...';
+                btnCancelarAg.style.display = 'none';
+                manicureRef.collection('agendamentos')
+                    .where('professionalId', '==', profissional.id)
+                    .where('status', '==', 'agendado')
+                    .get()
+                    .then((snap) => {
+                        infoAg.textContent = snap.size > 0
+                            ? `${snap.size} agendamento(s) pendente(s) com ela.`
+                            : 'Nenhum agendamento pendente com ela.';
+                        btnCancelarAg.style.display = snap.size > 0 ? 'block' : 'none';
+                    })
+                    .catch((e) => {
+                        console.error('Erro ao contar agendamentos pendentes da profissional:', e);
+                        infoAg.textContent = '';
+                    });
+            } else {
+                grupoAtivo.style.display = 'none';
+                infoAg.textContent = '';
+                btnCancelarAg.style.display = 'none';
+            }
+
+            document.getElementById('overlayProfissional').classList.add('active');
+        }
+
+        document.getElementById('btnAbrirModalProfissional').addEventListener('click', () => abrirModalProfissional(null));
+        window.editarProfissional = function(id) {
+            const p = profissionaisCache.find((x) => x.id === id);
+            if (!p) return;
+            abrirModalProfissional(p);
+        };
+        document.getElementById('fecharProfissional').addEventListener('click', () => {
+            document.getElementById('overlayProfissional').classList.remove('active');
+        });
+        document.getElementById('overlayProfissional').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+
+        document.getElementById('formProfissional').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const nome = document.getElementById('profNome').value.trim();
+            const whatsapp = document.getElementById('profWhatsapp').value.replace(/\D/g, '');
+            const servicos = Array.from(document.querySelectorAll('.prof-modal-servico-cb:checked')).map((cb) => cb.value);
+
+            if (!nome || !whatsapp || servicos.length === 0) {
+                mostrarToastPainel('Preencha nome, WhatsApp e pelo menos um serviço.', 'erro');
+                return;
+            }
+            if (whatsapp.length < 10) {
+                mostrarToastPainel('WhatsApp inválido. Use DDD + número.', 'erro');
+                return;
+            }
+
+            let ativo = true;
+            if (_profissionalEditandoId) {
+                ativo = document.getElementById('profAtivo').checked;
+                if (!ativo) {
+                    const outrasAtivas = profissionaisCache.filter((p) => p.id !== _profissionalEditandoId && p.ativo).length;
+                    if (outrasAtivas < Agnayls.MIN_PROFISSIONAIS_STUDIO) {
+                        mostrarToastPainel(`Não é possível ter menos de ${Agnayls.MIN_PROFISSIONAIS_STUDIO} profissionais ativas.`, 'erro');
+                        return;
+                    }
+                }
+            }
+
+            const btnSubmit = this.querySelector('button[type="submit"]');
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Salvando...';
+
+            try {
+                const dadosPublicos = { nome, servicos, ativo };
+                const dadosPrivados = { whatsapp, folgas: _profFolgasTemp };
+                if (_profissionalEditandoId) {
+                    await Agnayls.atualizarProfissional(usuarioAtual.uid, _profissionalEditandoId, dadosPublicos, dadosPrivados);
+                } else {
+                    await Agnayls.criarProfissional(usuarioAtual.uid, dadosPublicos, dadosPrivados);
+                }
+            } catch (err) {
+                console.error('Erro ao salvar profissional:', err);
+                mostrarToastPainel('Erro ao salvar. Tente novamente.', 'erro');
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Salvar';
+                return;
+            }
+
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Salvar';
+            document.getElementById('overlayProfissional').classList.remove('active');
+            mostrarToastPainel('Profissional salva!', 'sucesso');
+            await carregarProfissionais();
+        });
+
+        document.getElementById('profBtnCancelarAgendamentos').addEventListener('click', async function() {
+            if (!_profissionalEditandoId) return;
+            if (!confirm('Cancelar todos os agendamentos futuros desta profissional? Esta ação não pode ser desfeita.')) return;
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Cancelando...';
+            try {
+                const snap = await manicureRef.collection('agendamentos')
+                    .where('professionalId', '==', _profissionalEditandoId)
+                    .where('status', '==', 'agendado')
+                    .get();
+                for (const doc of snap.docs) {
+                    const ag = { id: doc.id, ...doc.data() };
+                    await manicureRef.collection('agendamentos').doc(ag.id).update({ status: 'cancelado' });
+                    try {
+                        await Agnayls.liberarSlotsAgendamento(usuarioAtual.uid, ag, _profissionalEditandoId);
+                    } catch (e) {
+                        console.error('Erro ao liberar horário na agenda pública:', e);
+                    }
+                }
+                mostrarToastPainel('Agendamentos cancelados.', 'sucesso');
+                document.getElementById('profInfoAgendamentosPendentes').textContent = 'Nenhum agendamento pendente com ela.';
+                btn.style.display = 'none';
+                await recarregarListaAgendamentos();
+            } catch (err) {
+                console.error('Erro ao cancelar agendamentos da profissional:', err);
+                mostrarToastPainel('Erro ao cancelar. Tente novamente.', 'erro');
+            }
+            btn.disabled = false;
+            btn.textContent = 'Cancelar agendamentos futuros dela';
+        });
+
+        function salvarConfigAuto() {
+            setConfig(config);
+        }
+
+        function carregarConfiguracoes() {
+            atualizarCardValidadePlano();
+            config = getConfig();
+            document.getElementById('configNome').value = config.nomeEmpresa || '';
+            document.getElementById('configSlogan').value = config.slogan || '';
+            document.getElementById('configWhatsapp').value = config.whatsapp ? Agnayls.mascararCelular(config.whatsapp) : '';
+            document.getElementById('configHoraInicio').value = config.horarioInicio || '';
+            document.getElementById('configHoraFim').value = config.horarioFim || '';
+            document.getElementById('configIntervalo').value = config.intervaloMinutos || '';
+            renderizarServicosConfig();
+            carregarPagamentosConfig();
+            renderizarDiasFolgaConfig();
+            renderizarFolgasEspecificas();
+            carregarSelectCancelar();
+            const nomeSlug = agnailSlugificar(config.nomeEmpresa) || 'agnayls';
+            const link = window.location.origin + window.location.pathname.replace('manicures.html', 'agendamentos.html') + '?nome=' + nomeSlug + '&m=' + usuarioAtual.uid;
+            document.getElementById('linkCompartilhar').value = link;
+            initTemas();
+        }
+
+        function agnailSlugificar(texto) {
+            return (texto || '')
+                .toString()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .slice(0, 60);
+        }
+
+        function renderizarServicosConfig() {
+            const lista = document.getElementById('servicosConfigLista');
+            if (!(config.servicos || []).length) {
+                lista.innerHTML = '<span style="color:var(--texto-claro);font-size:0.85rem;">Nenhum serviço cadastrado ainda.</span>';
+                return;
+            }
+            lista.innerHTML = (config.servicos || []).map((s, i) => `
+              <div class="servico-item">
+                <span>${Agnayls.escaparHTML(s.nome)} - R$ ${s.valor.toFixed(2)} (${s.duracao || 30} min)</span>
+                <button class="btn-icon" onclick="window.removerServico(${i})"><i class="fa-solid fa-trash"></i></button>
+              </div>`).join('');
+        }
+        window.removerServico = function(i) {
+            if (!confirm('Remover este serviço da lista?')) return;
+            config.servicos.splice(i, 1);
+            renderizarServicosConfig();
+            salvarConfigAuto();
+            mostrarToastPainel('Serviço removido.', 'sucesso');
+        };
+
+        function carregarPagamentosConfig() {
+            const pagamentos = config.formasPagamento || [];
+            document.querySelectorAll('.pagamento-config-cb').forEach(cb => {
+                cb.checked = pagamentos.includes(cb.value);
+            });
+        }
+
+        document.querySelectorAll('.pagamento-config-cb').forEach(cb => {
+            cb.addEventListener('change', function() {
+                const ativar = this.checked;
+                const pergunta = ativar
+                    ? `Ativar "${this.value}" como forma de pagamento?`
+                    : `Remover "${this.value}" das formas de pagamento?`;
+                if (!confirm(pergunta)) {
+                    this.checked = !ativar;
+                    return;
+                }
+                const formasAtivas = [];
+                document.querySelectorAll('.pagamento-config-cb:checked').forEach(c => formasAtivas.push(c.value));
+                config.formasPagamento = formasAtivas;
+                salvarConfigAuto();
+                mostrarToastPainel('Formas de pagamento atualizadas.', 'sucesso');
+            });
+        });
+
+        function renderizarDiasFolgaConfig() {
+            const diasFolga = config.diasFolga || [];
+            document.querySelectorAll('#diasFolgaConfig input[type="checkbox"]').forEach(cb => {
+                cb.checked = diasFolga.includes(parseInt(cb.value));
+            });
+        }
+
+        document.querySelectorAll('#diasFolgaConfig input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', function() {
+                const nomeDia = this.parentElement.textContent.trim();
+                const marcar = this.checked;
+                const pergunta = marcar
+                    ? `Marcar ${nomeDia} como folga fixa?`
+                    : `Remover ${nomeDia} da lista de folgas fixas?`;
+                if (!confirm(pergunta)) {
+                    this.checked = !marcar;
+                    return;
+                }
+                const diasFolga = [];
+                document.querySelectorAll('#diasFolgaConfig input[type="checkbox"]:checked').forEach(c => diasFolga.push(parseInt(c.value)));
+                config.diasFolga = diasFolga;
+                salvarConfigAuto();
+                mostrarToastPainel('Dias de folga atualizados.', 'sucesso');
+            });
+        });
+
+        function renderizarFolgasEspecificas() {
+            const lista = document.getElementById('listaFolgas');
+            const folgas = config.folgas || [];
+            if (folgas.length === 0) {
+                lista.innerHTML = '<span style="color:var(--texto-claro);font-size:0.85rem;">Nenhuma data de folga adicionada.</span>';
+                return;
+            }
+            lista.innerHTML = folgas.map(data => `
+                <span class="folga-item">
+                    ${new Date(data+'T00:00:00').toLocaleDateString('pt-BR')}
+                    <button onclick="window.removerFolga('${Agnayls.escaparAtributo(data)}')" title="Remover"><i class="fa-solid fa-xmark"></i></button>
+                </span>
+            `).join('');
+        }
+
+        window.removerFolga = function(data) {
+            if (!confirm(`Remover a folga do dia ${new Date(data+'T00:00:00').toLocaleDateString('pt-BR')}?`)) return;
+            config.folgas = (config.folgas || []).filter(d => d !== data);
+            renderizarFolgasEspecificas();
+            salvarConfigAuto();
+            mostrarToastPainel('Folga removida.', 'sucesso');
+        };
+
+        document.getElementById('btnAddFolga').addEventListener('click', () => {
+            const input = document.getElementById('inputNovaFolga');
+            const data = input.value;
+            if (!data) {
+                mostrarToastPainel('Selecione uma data.', 'erro');
+                return;
+            }
+            if ((config.folgas || []).includes(data)) {
+                mostrarToastPainel('Esta data já está na lista de folgas.', 'erro');
+                return;
+            }
+            config.folgas = (config.folgas || []).concat(data);
+            renderizarFolgasEspecificas();
+            salvarConfigAuto();
+            input.value = '';
+            mostrarToastPainel('Folga adicionada.', 'sucesso');
+        });
+
+        let itensSelectCancelar = [];
+        async function carregarSelectCancelar() {
+            const select = document.getElementById('selectCancelarAgendamento');
+            try {
+                const snap = await manicureRef.collection('agendamentos')
+                    .where('status', '==', 'agendado')
+                    .orderBy('data', 'asc')
+                    .limit(200)
+                    .get();
+                itensSelectCancelar = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            } catch (e) {
+                console.error('Erro ao carregar combo de cancelamento:', e);
+                itensSelectCancelar = [];
+            }
+            select.innerHTML = '<option value="">Selecione um agendamento...</option>' +
+                itensSelectCancelar.map(a =>
+                    `<option value="${Agnayls.escaparAtributo(a.id)}">${Agnayls.escaparHTML(a.nome)} - ${new Date(a.data+'T00:00:00').toLocaleDateString('pt-BR')} ${Agnayls.escaparHTML(a.horario)}</option>`
+                ).join('');
+        }
+        document.getElementById('btnCancelarAgendamento').addEventListener('click', async () => {
+            const id = document.getElementById('selectCancelarAgendamento').value;
+            if (!id) return;
+            const agendamentoCancelado = itensSelectCancelar.find(a => a.id === id);
+            if (!agendamentoCancelado) return;
+            if (confirm('Cancelar este agendamento?')) {
+                try {
+                    await manicureRef.collection('agendamentos').doc(id).update({ status: 'cancelado' });
+                } catch (e) {
+                    console.error('Erro ao cancelar agendamento:', e);
+                    mostrarToastPainel('Erro ao cancelar. Tente novamente.', 'erro');
+                    return;
+                }
+                try {
+                    await Agnayls.liberarSlotsAgendamento(usuarioAtual.uid, agendamentoCancelado, agendamentoCancelado.professionalId);
+                } catch (e) {
+                    console.error('Erro ao liberar horário na agenda pública:', e);
+                }
+                await carregarSelectCancelar();
+                await recarregarListaAgendamentos();
+                mostrarToastPainel('Agendamento cancelado.', 'sucesso');
+            }
+        });
+
+        document.getElementById('headerPainelClicavel').addEventListener('click', function() {
+            document.getElementById('configNome').value = config.nomeEmpresa || '';
+            document.getElementById('configSlogan').value = config.slogan || '';
+            document.getElementById('overlayEditarPerfil').classList.add('active');
+        });
+        document.getElementById('fecharEditarPerfil').addEventListener('click', function() {
+            document.getElementById('overlayEditarPerfil').classList.remove('active');
+        });
+
+        document.getElementById('btnUploadLogo').addEventListener('click', () => document.getElementById('inputLogo').click());
+        document.getElementById('inputLogo').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                config.imagem = await Agnayls.processarImagem(file);
+                atualizarHeaderPainel();
+                salvarConfigAuto();
+                mostrarToastPainel('Logo atualizada.', 'sucesso');
+            }
+        });
+        document.getElementById('btnRemoverLogo').addEventListener('click', () => {
+            config.imagem = '';
+            atualizarHeaderPainel();
+            salvarConfigAuto();
+            mostrarToastPainel('Logo removida.', 'sucesso');
+        });
+
+        document.getElementById('configNome').addEventListener('blur', function() {
+            const valor = this.value.trim();
+            if (!valor || valor === config.nomeEmpresa) return;
+            config.nomeEmpresa = valor;
+            atualizarHeaderPainel();
+            salvarConfigAuto();
+        });
+        document.getElementById('configSlogan').addEventListener('blur', function() {
+            const valor = this.value.trim();
+            if (valor === config.slogan) return;
+            config.slogan = valor;
+            atualizarHeaderPainel();
+            salvarConfigAuto();
+        });
+
+        document.getElementById('btnCopiarLink').addEventListener('click', function() {
+            const input = document.getElementById('linkCompartilhar');
+            input.select();
+            navigator.clipboard.writeText(input.value).then(() => {
+                mostrarToastPainel('Link copiado!', 'sucesso');
+            }).catch(() => {
+                document.execCommand('copy');
+                mostrarToastPainel('Link copiado!', 'sucesso');
+            });
+        });
+
+        document.getElementById('configWhatsapp').addEventListener('blur', function() {
+            const valor = this.value.trim().replace(/\D/g, '');
+            if (!valor || valor === config.whatsapp) return;
+            config.whatsapp = valor;
+            salvarConfigAuto();
+        });
+        document.getElementById('configHoraInicio').addEventListener('change', function() {
+            config.horarioInicio = this.value;
+            salvarConfigAuto();
+        });
+        document.getElementById('configHoraFim').addEventListener('change', function() {
+            config.horarioFim = this.value;
+            salvarConfigAuto();
+        });
+        document.getElementById('configIntervalo').addEventListener('change', function() {
+            let valor = parseInt(this.value) || 60;
+            valor = Math.min(480, Math.max(15, valor));
+            this.value = valor;
+            config.intervaloMinutos = valor;
+            salvarConfigAuto();
+        });
+
+        Agnayls.aplicarMascaraCelular(document.getElementById('configWhatsapp'));
+
+        function mostrarToastPainel(msg, tipo) {
+            const toast = document.getElementById('toastPainel');
+            toast.textContent = msg;
+            toast.className = 'toast ' + (tipo || '');
+            void toast.offsetWidth;
+            toast.classList.add('show');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        document.getElementById('btnAbrirSuporteConfig').addEventListener('click', function() {
+            Agnayls.abrirModalSuporte();
+        });
+
+        document.getElementById('btnConsultarTermos').addEventListener('click', function() {
+            document.getElementById('conteudoTermos').innerHTML = window.AGNAIL_TERMOS_HTML || '';
+            const overlay = document.getElementById('overlayTermos');
+            const checkWrapper = document.getElementById('checkAceiteTermos').parentElement;
+            const btn = document.getElementById('btnAceitarTermos');
+            checkWrapper.style.display = 'none';
+            btn.disabled = false;
+            btn.textContent = 'Fechar';
+            btn.onclick = function() {
+                overlay.classList.remove('active');
+                checkWrapper.style.display = '';
+                btn.textContent = 'Continuar';
+            };
+            overlay.classList.add('active');
+        });
+
+        document.getElementById('btnSairPainel').addEventListener('click', async function() {
+            await Agnayls.logout();
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('btnExcluirConta').addEventListener('click', async function() {
+            const confirmar = confirm('Tem certeza que deseja excluir sua conta? Seu acesso será bloqueado imediatamente. Seus dados ficam guardados por 90 dias; fazer login novamente com esta mesma conta dentro desse prazo restaura tudo automaticamente.');
+            if (!confirmar) return;
+            try {
+                await Agnayls.solicitarExclusaoConta(usuarioAtual.uid, usuarioAtual.email);
+                await Agnayls.logout();
+                alert('Sua conta foi marcada para exclusão. Você pode fazer login novamente dentro de 90 dias para restaurá-la.');
+                window.location.href = 'login.html';
+            } catch (e) {
+                console.error(e);
+                mostrarToastPainel('Erro ao solicitar exclusão. Tente novamente.', 'erro');
+            }
+        });
+
+        if (!isConfigurado()) {
+            exibirModalConfiguracaoInicial();
+        } else {
+            if (config.modo === 'studio') {
+                await carregarProfissionais();
+            }
+            carregarAgendamentos();
+            carregarConfiguracoes();
+        }
+
+        window.removerServico = window.removerServico;
+        window.concluirAgendamento = window.concluirAgendamento;
+        window.cancelarAgendamentoPainel = window.cancelarAgendamentoPainel;
+        window.removerServicoInicial = window.removerServicoInicial;
+        window.selecionarTema = window.selecionarTema;
+        window.removerFolga = window.removerFolga;
+        window.abrirDetalhes = window.abrirDetalhes;
+        window.editarProfissional = window.editarProfissional;
+        window.removerFolgaProfissionalModal = window.removerFolgaProfissionalModal;
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registrado com sucesso!', reg))
+                .catch(err => console.log('Falha ao registrar SW:', err));
+        }
+    })();
+</script>
+</body>
+</html>
