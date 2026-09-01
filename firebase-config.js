@@ -31,45 +31,22 @@ const AGNAIL_MAX_PDF_KB = 800;
 const AGNAIL_DIAS_RETENCAO_EXCLUSAO = 90;
 const AGNAIL_MIN_PROFISSIONAIS_STUDIO = 2;
 
-(function agnailDesativarSelecaoDeTexto() {
-  const estilo = document.createElement('style');
-  estilo.textContent = `
-    * {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-    input, textarea, select, [contenteditable="true"] {
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-      user-select: text;
-    }
-  `;
-  document.head.appendChild(estilo);
-
-  function permiteSelecao(el) {
-    if (!el || !el.closest) return false;
-    return !!el.closest('input, textarea, select, [contenteditable="true"]');
-  }
-  function permiteMenuContexto(el) {
-    if (!el || !el.closest) return false;
-    return !!el.closest('input, textarea, select, [contenteditable="true"], a');
-  }
-
-  ['copy', 'cut', 'selectstart'].forEach((evento) => {
-    document.addEventListener(evento, function (e) {
-      if (!permiteSelecao(e.target)) e.preventDefault();
-    });
-  });
-  document.addEventListener('contextmenu', function (e) {
-    if (!permiteMenuContexto(e.target)) e.preventDefault();
-  });
-})();
-
 function agnailLoginGoogle() {
-  return auth.signInWithPopup(googleProvider);
+  // F18: em navegadores/WebViews que bloqueiam pop-up (comum em apps móveis
+  // e alguns navegadores in-app), cai para signInWithRedirect. O resultado do
+  // redirect é capturado normalmente pelo listener onAuthStateChanged já
+  // existente em cada página (login.html, adm.html), então nenhum tratamento
+  // adicional é necessário nos pontos de chamada.
+  return auth.signInWithPopup(googleProvider).catch((erro) => {
+    const CODIGOS_FALLBACK_REDIRECT = [
+      'auth/popup-blocked',
+      'auth/operation-not-supported-in-this-environment'
+    ];
+    if (CODIGOS_FALLBACK_REDIRECT.includes(erro && erro.code)) {
+      return auth.signInWithRedirect(googleProvider);
+    }
+    throw erro;
+  });
 }
 
 function agnailLogout() {
@@ -541,6 +518,18 @@ async function agnailExcluirContaPermanentemente(uid) {
       continuar = snap.docs.length === TAMANHO_MAXIMO_LOTE;
     }
   }
+  // F19: se havia algum pagamento aguardando aprovação no momento da exclusão,
+  // o ponteiro em administracao/pagamentosPendentes/itens ficaria órfão
+  // (apontando para um uid/pagamentoId que não existe mais). A UI do admin já
+  // tolerava isso silenciosamente, mas o ideal é não deixar lixo acumular.
+  const pendentesOrfaosSnap = await db.collection('administracao').doc('pagamentosPendentes')
+    .collection('itens').where('uid', '==', uid).get();
+  if (!pendentesOrfaosSnap.empty) {
+    const batchPendentesOrfaos = db.batch();
+    pendentesOrfaosSnap.docs.forEach((d) => batchPendentesOrfaos.delete(d.ref));
+    await batchPendentesOrfaos.commit();
+  }
+
   await db.collection('usuarios').doc(uid).delete();
   await db.collection('administracao').doc('contasPendentesExclusao').collection('contas').doc(uid).delete();
 }
@@ -566,19 +555,22 @@ async function agnailCalcularValorMensalidadeStudio(uid) {
   ]);
   const valorPorFuncionaria = configSistema.valorFuncionariaStudio || 0;
 
-  let numProfissionaisCobraveis = 0;
-  for (const p of profissionais) {
-    if (p.ativo) {
-      numProfissionaisCobraveis++;
-      continue;
-    }
-    const snap = await agnailManicureRef(uid).collection('agendamentos')
-      .where('professionalId', '==', p.id)
-      .where('status', '==', 'agendado')
-      .limit(1)
-      .get();
-    if (!snap.empty) numProfissionaisCobraveis++;
-  }
+  // F11: as profissionais ativas contam direto; as inativas precisam de uma
+  // consulta para saber se ainda têm agendamento pendente. Antes isso rodava
+  // em série (um round-trip ao Firestore por vez); agora roda em paralelo.
+  const profissionaisInativas = profissionais.filter((p) => !p.ativo);
+  const resultadosInativas = await Promise.all(
+    profissionaisInativas.map((p) =>
+      agnailManicureRef(uid).collection('agendamentos')
+        .where('professionalId', '==', p.id)
+        .where('status', '==', 'agendado')
+        .limit(1)
+        .get()
+    )
+  );
+  const numAtivas = profissionais.filter((p) => p.ativo).length;
+  const numInativasCobraveis = resultadosInativas.filter((snap) => !snap.empty).length;
+  const numProfissionaisCobraveis = numAtivas + numInativasCobraveis;
 
   return {
     numProfissionaisCobraveis,
@@ -667,6 +659,41 @@ function agnailAbrirModalSuporte(aoFechar) {
   overlay._agnailAoFechar = aoFechar || null;
   overlay.style.display = 'flex';
   overlay.classList.add('active');
+}
+
+async function agnailSistemaEmManutencao() {
+  try {
+    const configSistema = await agnailGetConfigSistema();
+    return !!configSistema.manutencao;
+  } catch (e) {
+    // A regra do Firestore para administracao/configuracoes não libera leitura
+    // para toda conta autenticada em todo estado de assinatura (ver
+    // agnailPodeVerConfigSistema nas regras) — se a leitura for negada por
+    // esse motivo, ou falhar por qualquer outra razão, não bloqueamos o
+    // usuário por conta disso (fail-open): a checagem de manutenção é uma
+    // conveniência operacional, não um controle de segurança.
+    console.warn('Não foi possível verificar o modo de manutenção (seguindo normalmente):', e);
+    return false;
+  }
+}
+
+function agnailExibirTelaManutencao(mensagemPersonalizada) {
+  let overlay = document.getElementById('overlayManutencaoAgnail');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'overlayManutencaoAgnail';
+    overlay.style.cssText = 'position:fixed;inset:0;background:var(--bg,#fdf6f9);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:24px;z-index:99999;text-align:center;font-family:\'Nunito\',system-ui,sans-serif;color:var(--texto,#5d4a5c);';
+    overlay.innerHTML = `
+      <div style="font-size:2.6rem;">🛠️</div>
+      <h2 style="font-family:'Playfair Display',serif; font-weight:500; font-size:1.3rem; margin:0;">Sistema em manutenção</h2>
+      <p id="agnailManutencaoMsg" style="max-width:380px; font-size:0.9rem; color:var(--texto-claro,#8a7a89); line-height:1.5; margin:0;"></p>
+    `;
+    document.body.appendChild(overlay);
+  }
+  // textContent (nunca innerHTML) — seguro mesmo se um dia a mensagem vier de fonte externa.
+  document.getElementById('agnailManutencaoMsg').textContent =
+    mensagemPersonalizada || 'Estamos com uma manutenção programada em andamento. Tente novamente em alguns minutos.';
+  overlay.style.display = 'flex';
 }
 
 function agnailCriarPaginador(queryBase, tamanhoPagina) {
@@ -761,6 +788,8 @@ window.Agnayls = {
   calcularValorMensalidadeStudio: agnailCalcularValorMensalidadeStudio,
   enviarComprovante: agnailEnviarComprovante,
   abrirModalSuporte: agnailAbrirModalSuporte,
+  sistemaEmManutencao: agnailSistemaEmManutencao,
+  exibirTelaManutencao: agnailExibirTelaManutencao,
   criarPaginador: agnailCriarPaginador,
   renderizarControlesPaginacao: agnailRenderizarControlesPaginacao,
   MIN_PROFISSIONAIS_STUDIO: AGNAIL_MIN_PROFISSIONAIS_STUDIO,

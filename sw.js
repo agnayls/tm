@@ -1,4 +1,4 @@
-const CACHE_NAME = 'agnail-cache-v2.0.4';
+const CACHE_NAME = 'agnail-cache-v2.0.5';
 const ASSETS_ESTATICOS = [
   'assets/logo.png',
   'https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap',
@@ -10,8 +10,12 @@ const PAGINAS_APP = [
   'login.html',
   'cobranca.html',
   'manicures.html',
-  'agendamentos.html',
-  'adm.html'
+  'agendamentos.html'
+  // F16: 'adm.html' removido de propósito — este service worker também é
+  // registrado por agendamentos.html (página pública, sem login), então
+  // qualquer visitante anônimo acabava com o HTML do painel admin
+  // pré-armazenado no Cache Storage do próprio navegador. O admin ainda
+  // acessa adm.html normalmente; só não é mais pré-cacheado no install.
 ];
 
 self.addEventListener('install', event => {

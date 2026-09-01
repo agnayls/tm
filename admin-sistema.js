@@ -287,6 +287,7 @@
     };
 
     window.AgnaylsAdmin.bloquearAcesso = async function (uid) {
+        if (!confirm('Bloquear o acesso desta conta agora? A manicure perde acesso ao painel imediatamente.')) return;
         await Agnayls.manicureRef(uid).collection('meta').doc('assinatura').set({
             acessoLiberado: false, status: 'expirado'
         }, { merge: true });
@@ -297,6 +298,7 @@
     };
 
     window.AgnaylsAdmin.liberarAcesso = async function (uid) {
+        if (!confirm('Liberar o acesso desta conta agora, com vencimento em 30 dias?')) return;
         const novoVencimento = new Date();
         novoVencimento.setDate(novoVencimento.getDate() + 30);
         await Agnayls.manicureRef(uid).collection('meta').doc('assinatura').set({
@@ -410,6 +412,7 @@
     };
 
     window.AgnaylsAdmin.aprovarPagamento = async function (uid, pagamentoId) {
+        if (!confirm('Aprovar este pagamento e liberar/renovar o acesso da conta?')) return;
         const obs = document.getElementById('obs-' + pagamentoId)?.value || '';
         const agora = firebase.firestore.Timestamp.now();
 
@@ -449,6 +452,7 @@
     };
 
     window.AgnaylsAdmin.rejeitarPagamento = async function (uid, pagamentoId) {
+        if (!confirm('Rejeitar este pagamento? O acesso da conta será marcado como expirado.')) return;
         const obs = document.getElementById('obs-' + pagamentoId)?.value || '';
         await Agnayls.manicureRef(uid).collection('pagamentos').doc(pagamentoId).set({
             status: 'rejeitado', observacoes: obs
@@ -523,7 +527,6 @@
     };
 
     window.AgnaylsAdmin.excluirPermanente = async function (uid) {
-        if (!confirm('Esta ação é irreversível e removerá todos os dados desta manicure. Continuar?')) return;
         let resumoContaExcluida = { uid };
         try {
             const usuarioSnap = await Agnayls.db.collection('usuarios').doc(uid).get();
@@ -534,6 +537,37 @@
         } catch (e) {
             console.error('Erro ao buscar dados da conta antes da exclusão (log ficará incompleto):', e);
         }
+
+        // F5: exclusão definitiva é irreversível — confirm() simples é contornável
+        // por script e fácil de disparar sem realmente ler o aviso. Exige digitar
+        // o e-mail exato da conta.
+        const emailAlvo = resumoContaExcluida.email;
+        if (!emailAlvo) {
+            mostrarToast('Não foi possível confirmar o e-mail desta conta. Atualize a lista e tente novamente.', 'erro');
+            return;
+        }
+        const digitado = prompt(
+            'Esta ação é IRREVERSÍVEL e remove todos os dados desta manicure ' +
+            '(agendamentos, financeiro, clientes, profissionais).\n\n' +
+            'Para confirmar, digite exatamente o e-mail da conta:\n' + emailAlvo
+        );
+        if (digitado === null) return;
+        if (digitado.trim().toLowerCase() !== emailAlvo.toLowerCase()) {
+            mostrarToast('E-mail digitado não confere. Exclusão cancelada.', 'erro');
+            return;
+        }
+
+        // F5: exige reautenticação recente do próprio admin antes de uma ação
+        // desse impacto — reduz o risco de a sessão já aberta ser usada por
+        // automação/script sem uma interação real do admin naquele momento.
+        try {
+            await Agnayls.auth.currentUser.reauthenticateWithPopup(new firebase.auth.GoogleAuthProvider());
+        } catch (e) {
+            console.error('Reautenticação falhou ou foi cancelada:', e);
+            mostrarToast('Reautenticação necessária para excluir. Tente novamente.', 'erro');
+            return;
+        }
+
         try {
             await Agnayls.excluirContaPermanentemente(uid);
         } catch (e) {
@@ -553,6 +587,7 @@
         document.getElementById('cfgChavePix').value = configSistemaCache.chavePix;
         document.getElementById('cfgWhatsapp').value = Agnayls.mascararCelular(configSistemaCache.whatsappFinanceiro);
         document.getElementById('cfgDiasTeste').value = configSistemaCache.diasTeste;
+        document.getElementById('cfgManutencao').checked = !!configSistemaCache.manutencao;
     }
     Agnayls.aplicarMascaraCelular(document.getElementById('cfgWhatsapp'));
 
@@ -563,7 +598,8 @@
             valorFuncionariaStudio: parseFloat(document.getElementById('cfgValorFuncionariaStudio').value) || 0,
             chavePix: document.getElementById('cfgChavePix').value.trim(),
             whatsappFinanceiro: document.getElementById('cfgWhatsapp').value.replace(/\D/g, ''),
-            diasTeste: parseInt(document.getElementById('cfgDiasTeste').value) || 15
+            diasTeste: parseInt(document.getElementById('cfgDiasTeste').value) || 15,
+            manutencao: document.getElementById('cfgManutencao').checked
         };
         await Agnayls.setConfigSistema(novaConfig);
         configSistemaCache = { ...configSistemaCache, ...novaConfig };
