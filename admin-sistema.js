@@ -1,6 +1,7 @@
 (function () {
     let adminAtual = null;
     let configSistemaCache = null;
+    let statusSistemaCache = null;
     let itensPaginaAtualManicures = [];
     let paginadorManicures = null;
     let comprovantesPdfCache = {};
@@ -89,6 +90,7 @@
         document.getElementById('emailAdminLogado').textContent = user.email;
 
         configSistemaCache = await Agnayls.getConfigSistema();
+        statusSistemaCache = await Agnayls.getStatusSistema();
         preencherFormConfig();
 
         await Promise.all([carregarManicures(), carregarPagamentosPendentes(), carregarContasExclusao()]);
@@ -110,6 +112,7 @@
         btn.innerHTML = '<i class="fa-solid fa-rotate fa-spin"></i>';
         try {
             configSistemaCache = await Agnayls.getConfigSistema();
+            statusSistemaCache = await Agnayls.getStatusSistema();
             preencherFormConfig();
             await Promise.all([carregarManicures(), carregarPagamentosPendentes(), carregarContasExclusao()]);
             mostrarToast('Dados atualizados!', 'sucesso');
@@ -587,7 +590,7 @@
         document.getElementById('cfgChavePix').value = configSistemaCache.chavePix;
         document.getElementById('cfgWhatsapp').value = Agnayls.mascararCelular(configSistemaCache.whatsappFinanceiro);
         document.getElementById('cfgDiasTeste').value = configSistemaCache.diasTeste;
-        document.getElementById('cfgManutencao').checked = !!configSistemaCache.manutencao;
+        document.getElementById('cfgManutencao').checked = !!(statusSistemaCache && statusSistemaCache.manutencao);
     }
     Agnayls.aplicarMascaraCelular(document.getElementById('cfgWhatsapp'));
 
@@ -598,11 +601,18 @@
             valorFuncionariaStudio: parseFloat(document.getElementById('cfgValorFuncionariaStudio').value) || 0,
             chavePix: document.getElementById('cfgChavePix').value.trim(),
             whatsappFinanceiro: document.getElementById('cfgWhatsapp').value.replace(/\D/g, ''),
-            diasTeste: parseInt(document.getElementById('cfgDiasTeste').value) || 15,
-            manutencao: document.getElementById('cfgManutencao').checked
+            diasTeste: parseInt(document.getElementById('cfgDiasTeste').value) || 15
         };
-        await Agnayls.setConfigSistema(novaConfig);
+        const novaManutencao = document.getElementById('cfgManutencao').checked;
+        // manutencao mora num documento separado (administracao/status), de
+        // leitura pública — ver comentário na regra do Firestore — então é
+        // salva à parte, não dentro de administracao/configuracoes.
+        await Promise.all([
+            Agnayls.setConfigSistema(novaConfig),
+            Agnayls.setStatusSistema(novaManutencao)
+        ]);
         configSistemaCache = { ...configSistemaCache, ...novaConfig };
+        statusSistemaCache = { manutencao: novaManutencao };
         mostrarToast('Configurações salvas!', 'sucesso');
     });
 })();

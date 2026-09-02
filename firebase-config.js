@@ -205,7 +205,6 @@ async function agnailGetConfigSistema() {
     diasTeste: AGNAIL_DIAS_TESTE_PADRAO,
     chavePix: '',
     whatsappFinanceiro: '',
-    manutencao: false,
     valorFuncionariaStudio: 0
   };
   const ref = db.collection('administracao').doc('configuracoes');
@@ -215,6 +214,18 @@ async function agnailGetConfigSistema() {
     return padrao;
   }
   return { ...padrao, ...snap.data() };
+}
+
+// Documento separado, de leitura pública, só com o flag de manutenção — ver
+// comentário na regra do Firestore (administracao/status) para o motivo de
+// não estar junto de administracao/configuracoes.
+async function agnailGetStatusSistema() {
+  const snap = await db.collection('administracao').doc('status').get();
+  return snap.exists ? { manutencao: false, ...snap.data() } : { manutencao: false };
+}
+
+async function agnailSetStatusSistema(manutencao) {
+  await db.collection('administracao').doc('status').set({ manutencao: !!manutencao });
 }
 
 async function agnailSetConfigSistema(dados) {
@@ -663,15 +674,14 @@ function agnailAbrirModalSuporte(aoFechar) {
 
 async function agnailSistemaEmManutencao() {
   try {
-    const configSistema = await agnailGetConfigSistema();
-    return !!configSistema.manutencao;
+    const statusSistema = await agnailGetStatusSistema();
+    return !!statusSistema.manutencao;
   } catch (e) {
-    // A regra do Firestore para administracao/configuracoes não libera leitura
-    // para toda conta autenticada em todo estado de assinatura (ver
-    // agnailPodeVerConfigSistema nas regras) — se a leitura for negada por
-    // esse motivo, ou falhar por qualquer outra razão, não bloqueamos o
-    // usuário por conta disso (fail-open): a checagem de manutenção é uma
-    // conveniência operacional, não um controle de segurança.
+    // administracao/status agora é de leitura pública, então isto não deveria
+    // mais falhar por permissão — mas mantém o fail-open pra qualquer falha
+    // de rede/infra: a checagem de manutenção é uma conveniência operacional,
+    // não um controle de segurança, então nunca deve travar o usuário por
+    // conta própria.
     console.warn('Não foi possível verificar o modo de manutenção (seguindo normalmente):', e);
     return false;
   }
@@ -772,6 +782,8 @@ window.Agnayls = {
   processarComprovante: agnailProcessarComprovante,
   getConfigSistema: agnailGetConfigSistema,
   setConfigSistema: agnailSetConfigSistema,
+  getStatusSistema: agnailGetStatusSistema,
+  setStatusSistema: agnailSetStatusSistema,
   manicureRef: agnailManicureRef,
   criarEstruturaInicial: agnailCriarEstruturaInicial,
   getUsuario: agnailGetUsuario,

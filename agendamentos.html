@@ -929,10 +929,26 @@
             document.documentElement.style.setProperty('--texto-claro', c.textoClaro);
         }
 
+        // Checagem de manutenção primeiro, antes de qualquer outra coisa — inclusive
+        // antes de validar o link. Usa o mesmo relógio de segurança (agora que
+        // administracao/status é público, essa leitura deveria ser rápida; se
+        // travar mesmo assim, cai no fallback de "navegador travando", que é a
+        // mensagem certa pra esse caso — diferente de "sistema em manutenção").
+        agnailIniciarRelogioTravamento();
+        if (await Agnayls.sistemaEmManutencao()) {
+            agnailPararRelogioTravamento();
+            const gateManutencao = document.getElementById('agnailAuthGate');
+            if (gateManutencao) gateManutencao.remove();
+            document.body.classList.remove('agnail-carregando');
+            Agnayls.exibirTelaManutencao();
+            return;
+        }
+
         const parametros = new URLSearchParams(window.location.search);
         const manicureUid = parametros.get('m');
 
         if (!manicureUid) {
+            agnailPararRelogioTravamento();
             const gate = document.getElementById('agnailAuthGate');
             gate.classList.add('erro');
             gate.innerHTML = '<i class="fa-solid fa-link-slash"></i><p>Link inválido. Peça para a manicure compartilhar o link correto de agendamento.</p>';
