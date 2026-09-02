@@ -814,7 +814,92 @@
         atualizar();
     })();
 
-    (async function() {
+    // ---- Watchdog contra travamento em navegadores internos (Instagram, TikTok, Facebook etc.) ----
+    // Esses navegadores in-app costumam restringir localStorage/cookies/App Check.
+    // Como o fluxo original não tinha timeout nem try/catch, uma falha silenciosa
+    // nessas restrições deixava a tela presa no spinner pra sempre, sem aviso. Isto
+    // cobre os trechos "silenciosos" (rede/Firestore) com um relógio de segurança;
+    // nos trechos interativos (aceitar termos, escolher profissional) o relógio é
+    // pausado, porque aí quem está devagar é a pessoa, não a rede.
+    const AGNAIL_TIMEOUT_CARREGAMENTO_MS = 12000;
+    let _agnailTimeoutTravamento = null;
+    let _agnailFallbackJaExibido = false;
+
+    function agnailIniciarRelogioTravamento() {
+        agnailPararRelogioTravamento();
+        _agnailTimeoutTravamento = setTimeout(agnailExibirFallbackNavegadorInterno, AGNAIL_TIMEOUT_CARREGAMENTO_MS);
+    }
+
+    function agnailPararRelogioTravamento() {
+        if (_agnailTimeoutTravamento) {
+            clearTimeout(_agnailTimeoutTravamento);
+            _agnailTimeoutTravamento = null;
+        }
+    }
+
+    function agnailExibirFallbackNavegadorInterno() {
+        if (_agnailFallbackJaExibido) return;
+        _agnailFallbackJaExibido = true;
+        agnailPararRelogioTravamento();
+
+        const ehAndroid = /Android/i.test(navigator.userAgent);
+        const instrucao = ehAndroid
+            ? 'Toque nos <strong>⋮ (três pontinhos)</strong> no canto superior da tela e escolha <strong>"Abrir no Chrome"</strong> (ou "Abrir no navegador").'
+            : 'Toque nos <strong>••• (três pontinhos)</strong> no canto da tela e escolha <strong>"Abrir no Safari"</strong>.';
+
+        const linkAtual = window.location.href;
+        const html = `
+            <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:1.8rem; color:var(--rosa-escuro,#c47d8f); margin-bottom:10px;"></i>
+            <p style="font-weight:700; margin-bottom:6px;">Esse navegador está travando o carregamento</p>
+            <p style="font-size:0.86rem; color:var(--texto-claro,#8a7a89); max-width:320px; margin:0 auto 16px; line-height:1.5;">
+                Isso é comum no navegador interno do Instagram, TikTok ou Facebook. ${instrucao}
+            </p>
+            <div style="display:flex; flex-direction:column; gap:8px; max-width:280px; margin:0 auto;">
+                <a href="${linkAtual}" target="_blank" rel="noopener"
+                   style="display:block; padding:12px; border-radius:50px; background:var(--rosa-escuro,#c47d8f); color:#fff; text-decoration:none; font-weight:600; font-size:0.9rem;">
+                   Tentar abrir em nova aba
+                </a>
+                <button type="button" id="btnCopiarLinkFallback"
+                   style="padding:12px; border-radius:50px; border:2px solid var(--rosa,#e4a5b8); background:#fff; color:var(--rosa-escuro,#c47d8f); font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">
+                   Copiar link
+                </button>
+            </div>
+        `;
+
+        const gate = document.getElementById('agnailAuthGate');
+        if (gate) {
+            gate.classList.remove('erro');
+            gate.style.display = 'flex';
+            gate.innerHTML = html;
+        } else {
+            const overlay = document.createElement('div');
+            overlay.id = 'agnailFallbackNavegadorInterno';
+            overlay.style.cssText = 'position:fixed;inset:0;background:var(--bg,#fdf6f9);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;z-index:99999;';
+            overlay.innerHTML = html;
+            document.body.appendChild(overlay);
+        }
+
+        document.body.classList.remove('agnail-carregando');
+
+        const btnCopiar = document.getElementById('btnCopiarLinkFallback');
+        if (btnCopiar) {
+            btnCopiar.addEventListener('click', function () {
+                const aoCopiar = () => {
+                    btnCopiar.textContent = 'Link copiado!';
+                    setTimeout(() => { btnCopiar.textContent = 'Copiar link'; }, 2000);
+                };
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(linkAtual).then(aoCopiar).catch(() => {
+                        prompt('Copie o link abaixo:', linkAtual);
+                    });
+                } else {
+                    prompt('Copie o link abaixo:', linkAtual);
+                }
+            });
+        }
+    }
+
+    async function iniciarAgendamentoPublico() {
         const AGNAIL_WORKER_URL = 'https://agnails-agendamento-worker.tecminia.workers.dev';
 
         const TEMAS = [
@@ -898,12 +983,14 @@
             return promise;
         }
 
+        agnailIniciarRelogioTravamento();
         const [configuracoesRemotas, assinaturaRemota] = await Promise.all([
             Agnayls.getConfiguracoes(manicureUid),
             Agnayls.getAssinatura(manicureUid)
         ]);
 
         if (!configuracoesRemotas) {
+            agnailPararRelogioTravamento();
             const gate = document.getElementById('agnailAuthGate');
             gate.classList.add('erro');
             gate.innerHTML = '<i class="fa-solid fa-link-slash"></i><p>Não encontramos esta agenda. O link pode estar incorreto ou a conta pode não existir mais.</p>';
@@ -913,6 +1000,9 @@
         aplicarTemaIndex(configuracoesRemotas.tema);
 
         const statusAcessoManicure = Agnayls.calcularStatusAcesso(assinaturaRemota);
+        // A partir daqui não há mais espera silenciosa de rede até a próxima seção
+        // (o próximo passo, se chegar lá, é interativo — aceitar termos).
+        agnailPararRelogioTravamento();
         if (!statusAcessoManicure.acessoLiberado) {
             const gate = document.getElementById('agnailAuthGate');
             gate.classList.add('erro');
@@ -938,6 +1028,10 @@
                 resolve();
             };
         });
+
+        // Termos aceitos (ou já tinham sido) — a partir daqui volta a ser espera de
+        // rede (Firestore/Worker), então o relógio de segurança volta a rodar.
+        agnailIniciarRelogioTravamento();
 
         const ehContaStudio = configuracoesRemotas.modo === 'studio';
         let profissionalEscolhidaId = null;
@@ -975,6 +1069,9 @@
                         });
                     });
                 }
+                // A partir daqui quem está "devagar" é a pessoa escolhendo, não a
+                // rede — pausa o relógio de segurança enquanto a tela fica visível.
+                agnailPararRelogioTravamento();
                 const gate = document.getElementById('agnailAuthGate');
                 if (gate) gate.style.display = 'none';
                 tela.style.display = 'block';
@@ -984,6 +1081,9 @@
         if (ehContaStudio) {
             profissionalEscolhidaPublico = await agnailEscolherProfissional();
             profissionalEscolhidaId = profissionalEscolhidaPublico.id;
+
+            // Profissional escolhida — volta a ser espera de rede.
+            agnailIniciarRelogioTravamento();
 
             const gate = document.getElementById('agnailAuthGate');
             if (gate) {
@@ -999,6 +1099,7 @@
                 const dados = await resp.json();
                 datasIndisponiveisProfissional = new Set(dados.datasIndisponiveis || []);
                 if (dados.profissionalAtiva === false) {
+                    agnailPararRelogioTravamento();
                     const gateErro = document.getElementById('agnailAuthGate');
                     gateErro.classList.add('erro');
                     gateErro.innerHTML = '<i class="fa-solid fa-clock"></i><p>Esta profissional não está mais disponível. Atualize a página para ver as demais.</p>';
@@ -1011,6 +1112,7 @@
 
         await agnailEscutarDisponibilidadeJanela(ehContaStudio ? profissionalEscolhidaId : undefined);
 
+        agnailPararRelogioTravamento();
         document.body.classList.remove('agnail-carregando');
         const gate = document.getElementById('agnailAuthGate');
         if (gate) gate.remove();
@@ -1595,7 +1697,18 @@
                 .then(reg => console.log('SW registrado com sucesso!', reg))
                 .catch(err => console.log('Falha ao registrar SW:', err));
         }
-    })();
+    }
+
+    iniciarAgendamentoPublico()
+        .then(() => {
+            agnailPararRelogioTravamento();
+        })
+        .catch((erro) => {
+            // Cobre erros de verdade (rejeições/exceções) — o watchdog acima cobre
+            // os casos de travamento silencioso (promise que nunca resolve nem rejeita).
+            console.error('Erro ao inicializar a página de agendamento:', erro);
+            agnailExibirFallbackNavegadorInterno();
+        });
 </script>
 </body>
 </html>
