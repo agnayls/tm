@@ -14,21 +14,21 @@
         :root {
             --bg: #fdf6f9;
             --card: #ffffff;
-            --rosa: #d9748c;
-            --rosa-escuro: #b8496b;
+            --rosa: #e4a5b8;
+            --rosa-escuro: #c47d8f;
             --rosa-claro: #fbeaef;
-            --lilas: #c3a8d1;
+            --lilas: #d5c3e0;
             --lilas-claro: #f3ecf8;
             --bege: #f5ece3;
             --nude: #efe3d8;
             --verde: #b5d8c3;
-            --verde-escuro: #4c8f68;
+            --verde-escuro: #7dab8e;
             --vermelho: #e8b4b8;
-            --vermelho-escuro: #b3495a;
-            --texto: #3d2c3c;
-            --texto-claro: #79687a;
-            --sombra: 0 1px 3px rgba(184, 73, 107, 0.06), 0 8px 20px rgba(184, 73, 107, 0.12);
-            --sombra-lg: 0 2px 6px rgba(184, 73, 107, 0.08), 0 16px 40px rgba(184, 73, 107, 0.18);
+            --vermelho-escuro: #c48d92;
+            --texto: #5d4a5c;
+            --texto-claro: #8a7a89;
+            --sombra: 0 4px 20px rgba(180, 150, 170, 0.1);
+            --sombra-lg: 0 12px 40px rgba(180, 150, 170, 0.18);
             --radius: 20px;
             --radius-sm: 12px;
             --radius-xs: 8px;
@@ -80,7 +80,7 @@
             font-size: 26px;
             color: var(--rosa-escuro);
             border: 3px solid white;
-            box-shadow: 0 2px 12px rgba(184,73,107,0.18);
+            box-shadow: 0 2px 12px rgba(180,150,170,0.2);
             overflow: hidden;
             flex-shrink: 0;
         }
@@ -243,7 +243,7 @@
             gap: 10px;
         }
         .agendamento-item:hover {
-            box-shadow: 0 4px 16px rgba(184,73,107,0.14);
+            box-shadow: 0 4px 16px rgba(180,150,170,0.12);
             border-color: var(--rosa-claro);
         }
         .agendamento-info { flex:1; min-width:160px; cursor:pointer; }
@@ -283,8 +283,8 @@
             touch-action: manipulation;
         }
         .btn-sm { padding:5px 12px; font-size:0.75rem; }
-        .btn-rosa { background:var(--rosa-escuro); color:white; box-shadow:0 4px 12px rgba(184,73,107,0.3); }
-        .btn-rosa:hover { background:var(--rosa); transform:translateY(-2px); }
+        .btn-rosa { background:var(--rosa); color:white; box-shadow:0 4px 12px rgba(196,125,143,0.3); }
+        .btn-rosa:hover { background:#d593a6; transform:translateY(-2px); }
         .btn-verde { background:var(--verde); color:#3d6b4a; }
         .btn-verde:hover { background:#a3ccb2; transform:translateY(-2px); }
         .btn-vermelho { background:var(--vermelho); color:#a54a5a; }
@@ -518,10 +518,10 @@
             transform: translateX(-50%) translateY(0);
         }
         .toast.sucesso {
-            background: var(--verde-escuro);
+            background: #7dab8e;
         }
         .toast.erro {
-            background: var(--vermelho-escuro);
+            background: #c48d92;
         }
 
         .checkbox-group {
@@ -616,7 +616,7 @@
 
         .acoes-config-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
             max-width: 420px;
         }
@@ -964,7 +964,7 @@
 
             <div style="display:flex; gap:8px; margin-top:20px;">
                 <button type="button" class="btn btn-outline" id="btnVoltarConfigInicial" style="flex:1;">Voltar</button>
-                <button type="submit" class="btn btn-rosa" id="btnSubmitConfigInicial" style="flex:2; padding:14px; font-size:1rem; box-shadow:0 4px 16px rgba(184,73,107,0.4);">
+                <button type="submit" class="btn btn-rosa" id="btnSubmitConfigInicial" style="flex:2; padding:14px; font-size:1rem; box-shadow:0 4px 16px rgba(196,125,143,0.4);">
                     <i class="fa-solid fa-check"></i> Salvar e começar
                 </button>
             </div>
@@ -1719,7 +1719,7 @@
         const TEMA_CACHE_KEY = 'agnail_tema_cache';
 
         const TEMAS = [
-            { id: 'rosa', nome: 'Rosa Clássico', cores: { bg: '#fdf6f9', card: '#ffffff', rosa: '#d9748c', rosaEscuro: '#b8496b', rosaClaro: '#fbeaef', lilas: '#c3a8d1', lilasClaro: '#f3ecf8', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#4c8f68', vermelho: '#e8b4b8', vermelhoEscuro: '#b3495a', texto: '#3d2c3c', textoClaro: '#79687a' } },
+            { id: 'rosa', nome: 'Rosa Clássico', cores: { bg: '#fdf6f9', card: '#ffffff', rosa: '#e4a5b8', rosaEscuro: '#c47d8f', rosaClaro: '#fbeaef', lilas: '#d5c3e0', lilasClaro: '#f3ecf8', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#5d4a5c', textoClaro: '#8a7a89' } },
             { id: 'lilas', nome: 'Lilás Suave', cores: { bg: '#f8f5fc', card: '#ffffff', rosa: '#d5c3e0', rosaEscuro: '#b89fc9', rosaClaro: '#f3ecf8', lilas: '#c9b8d4', lilasClaro: '#f0eaf5', bege: '#f5f0f0', nude: '#ede6e6', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#4a3e4a', textoClaro: '#7a6e7a' } },
             { id: 'menta', nome: 'Menta Fresca', cores: { bg: '#f2faf5', card: '#ffffff', rosa: '#b5d8c3', rosaEscuro: '#7dab8e', rosaClaro: '#eaf7ef', lilas: '#c9d8d0', lilasClaro: '#e8f2ec', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#3d6b4a', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#2d4a3a', textoClaro: '#5a7a6a' } },
             { id: 'azul', nome: 'Azul Céu', cores: { bg: '#f2f8fc', card: '#ffffff', rosa: '#a8c8e0', rosaEscuro: '#6f9dc0', rosaClaro: '#e6f1f8', lilas: '#c3d4e0', lilasClaro: '#ecf3f8', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#2d3e4a', textoClaro: '#5a6e7a' } }

@@ -14,21 +14,21 @@
         :root {
             --bg: #fdf6f9;
             --card: #ffffff;
-            --rosa: #d9748c;
-            --rosa-escuro: #b8496b;
+            --rosa: #e4a5b8;
+            --rosa-escuro: #c47d8f;
             --rosa-claro: #fbeaef;
-            --lilas: #c3a8d1;
+            --lilas: #d5c3e0;
             --lilas-claro: #f3ecf8;
             --bege: #f5ece3;
             --nude: #efe3d8;
             --verde: #b5d8c3;
-            --verde-escuro: #4c8f68;
+            --verde-escuro: #7dab8e;
             --vermelho: #e8b4b8;
-            --vermelho-escuro: #b3495a;
-            --texto: #3d2c3c;
-            --texto-claro: #79687a;
-            --sombra: 0 1px 3px rgba(184, 73, 107, 0.06), 0 8px 20px rgba(184, 73, 107, 0.12);
-            --sombra-lg: 0 2px 6px rgba(184, 73, 107, 0.08), 0 16px 40px rgba(184, 73, 107, 0.18);
+            --vermelho-escuro: #c48d92;
+            --texto: #5d4a5c;
+            --texto-claro: #8a7a89;
+            --sombra: 0 4px 20px rgba(180, 150, 170, 0.15);
+            --sombra-lg: 0 12px 40px rgba(180, 150, 170, 0.2);
             --radius: 20px;
             --radius-sm: 12px;
             --radius-xs: 8px;
@@ -221,11 +221,11 @@
             transform: scale(1.05);
         }
         .dia-cell.selecionado {
-            background: var(--rosa-escuro) !important;
+            background: var(--rosa) !important;
             color: white !important;
             border-color: var(--rosa-escuro) !important;
             font-weight: 700 !important;
-            box-shadow: 0 4px 16px rgba(184, 73, 107, 0.45);
+            box-shadow: 0 4px 16px rgba(196, 125, 143, 0.45);
             animation: pulseSelect 0.4s ease;
         }
         @keyframes pulseSelect {
@@ -374,20 +374,20 @@
         .horario-btn.ocupado {
             background: #fef0f1;
             border-color: #f5d5d8;
-            color: var(--vermelho-escuro);
+            color: #c48d92;
             cursor: not-allowed;
             opacity: 0.7;
             text-decoration: line-through;
         }
         .horario-btn.selecionado-horario {
-            background: var(--rosa-escuro) !important;
+            background: var(--rosa) !important;
             border-color: var(--rosa-escuro) !important;
             color: white !important;
             font-weight: 700 !important;
             text-decoration: none !important;
             opacity: 1 !important;
             cursor: pointer !important;
-            box-shadow: 0 4px 14px rgba(184, 73, 107, 0.4);
+            box-shadow: 0 4px 14px rgba(196, 125, 143, 0.4);
         }
 
         .form-group {
@@ -499,14 +499,14 @@
             touch-action: manipulation;
         }
         .btn-primario {
-            background: var(--rosa-escuro);
+            background: var(--rosa);
             color: white;
-            box-shadow: 0 4px 16px rgba(184, 73, 107, 0.35);
+            box-shadow: 0 4px 16px rgba(196, 125, 143, 0.35);
         }
         .btn-primario:hover {
-            background: var(--rosa);
+            background: #d593a6;
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(184, 73, 107, 0.45);
+            box-shadow: 0 8px 24px rgba(196, 125, 143, 0.45);
         }
         .btn-primario:active {
             transform: scale(0.97);
@@ -565,10 +565,10 @@
             transform: translateX(-50%) translateY(0);
         }
         .toast.sucesso {
-            background: var(--verde-escuro);
+            background: #7dab8e;
         }
         .toast.erro {
-            background: var(--vermelho-escuro);
+            background: #c48d92;
         }
 
         .info-dia {
@@ -843,14 +843,14 @@
         agnailPararRelogioTravamento();
 
         const html = `
-            <i class="fa-solid fa-triangle-exclamation" style="font-size:1.8rem; color:var(--rosa-escuro,#b8496b); margin-bottom:10px;"></i>
+            <i class="fa-solid fa-triangle-exclamation" style="font-size:1.8rem; color:var(--rosa-escuro,#c47d8f); margin-bottom:10px;"></i>
             <p style="font-weight:700; margin-bottom:6px;">Não foi possível carregar</p>
-            <p style="font-size:0.86rem; color:var(--texto-claro,#79687a); max-width:320px; margin:0 auto 16px; line-height:1.5;">
+            <p style="font-size:0.86rem; color:var(--texto-claro,#8a7a89); max-width:320px; margin:0 auto 16px; line-height:1.5;">
                 Pode ser uma instabilidade momentânea na conexão. Tente novamente em alguns instantes.
             </p>
             <div style="display:flex; flex-direction:column; gap:8px; max-width:280px; margin:0 auto;">
                 <button type="button" id="btnTentarNovamenteFallback"
-                   style="padding:12px; border-radius:50px; border:none; background:var(--rosa-escuro,#b8496b); color:#fff; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">
+                   style="padding:12px; border-radius:50px; border:none; background:var(--rosa-escuro,#c47d8f); color:#fff; font-weight:600; font-size:0.9rem; cursor:pointer; font-family:inherit;">
                    Tentar novamente
                 </button>
             </div>
@@ -883,7 +883,7 @@
         const AGNAIL_WORKER_URL = 'https://agnails-agendamento-worker.tecminia.workers.dev';
 
         const TEMAS = [
-            { id: 'rosa', cores: { bg: '#fdf6f9', card: '#ffffff', rosa: '#d9748c', rosaEscuro: '#b8496b', rosaClaro: '#fbeaef', lilas: '#c3a8d1', lilasClaro: '#f3ecf8', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#4c8f68', vermelho: '#e8b4b8', vermelhoEscuro: '#b3495a', texto: '#3d2c3c', textoClaro: '#79687a' } },
+            { id: 'rosa', cores: { bg: '#fdf6f9', card: '#ffffff', rosa: '#e4a5b8', rosaEscuro: '#c47d8f', rosaClaro: '#fbeaef', lilas: '#d5c3e0', lilasClaro: '#f3ecf8', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#5d4a5c', textoClaro: '#8a7a89' } },
             { id: 'lilas', cores: { bg: '#f8f5fc', card: '#ffffff', rosa: '#d5c3e0', rosaEscuro: '#b89fc9', rosaClaro: '#f3ecf8', lilas: '#c9b8d4', lilasClaro: '#f0eaf5', bege: '#f5f0f0', nude: '#ede6e6', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#4a3e4a', textoClaro: '#7a6e7a' } },
             { id: 'menta', cores: { bg: '#f2faf5', card: '#ffffff', rosa: '#b5d8c3', rosaEscuro: '#7dab8e', rosaClaro: '#eaf7ef', lilas: '#c9d8d0', lilasClaro: '#e8f2ec', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#3d6b4a', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#2d4a3a', textoClaro: '#5a7a6a' } },
             { id: 'azul', cores: { bg: '#f2f8fc', card: '#ffffff', rosa: '#a8c8e0', rosaEscuro: '#6f9dc0', rosaClaro: '#e6f1f8', lilas: '#c3d4e0', lilasClaro: '#ecf3f8', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#2d3e4a', textoClaro: '#5a6e7a' } }
