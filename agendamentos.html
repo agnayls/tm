@@ -21,13 +21,13 @@
             --lilas-claro: #f3ecf8;
             --bege: #f5ece3;
             --nude: #efe3d8;
-            --verde: #8fd8ac;
-            --verde-escuro: #4da679;
-            --vermelho: #f2a8c5;
-            --vermelho-escuro: #e2789f;
+            --verde: #a3ddbc;
+            --verde-escuro: #5cb083;
+            --vermelho: #f0b6cd;
+            --vermelho-escuro: #de90ab;
             --texto: #5d4a5c;
             --texto-claro: #8a7a89;
-            --linha: rgba(93, 74, 92, 0.14);
+            --linha: rgba(93, 74, 92, 0.22);
             --sombra: 0 4px 20px rgba(180, 150, 170, 0.15);
             --sombra-lg: 0 12px 40px rgba(180, 150, 170, 0.2);
             --radius: 20px;
@@ -271,7 +271,7 @@
             min-height: 42px;
         }
         .dia-cell.fora-range {
-            opacity: 0.35;
+            opacity: 0.45;
             cursor: default;
             pointer-events: none;
         }
@@ -290,27 +290,27 @@
             color: #204a30;
             font-weight: 700;
             cursor: pointer;
-            border: 1.5px solid rgba(77, 166, 121, 0.55);
+            border: 1.5px solid rgba(92, 176, 131, 0.6);
         }
         .dia-cell.disponivel:hover {
             background: var(--verde-escuro);
             color: #fff;
             transform: scale(1.08);
-            box-shadow: 0 4px 14px rgba(77, 166, 121, 0.45);
+            box-shadow: 0 4px 14px rgba(92, 176, 131, 0.45);
             border-color: var(--verde-escuro);
         }
         .dia-cell.indisponivel {
             background: var(--vermelho);
             color: #74213f;
             cursor: pointer;
-            border: 1.5px solid rgba(226, 120, 159, 0.5);
+            border: 1.5px solid rgba(222, 144, 171, 0.55);
             font-weight: 600;
         }
         .dia-cell.indisponivel:hover {
             background: var(--vermelho-escuro);
             color: #fff;
             transform: scale(1.05);
-            box-shadow: 0 4px 14px rgba(226, 120, 159, 0.4);
+            box-shadow: 0 4px 14px rgba(222, 144, 171, 0.4);
         }
         .dia-cell.selecionado {
             background: var(--rosa) !important;
@@ -458,6 +458,31 @@
         .modal-fechar:hover {
             background: var(--rosa);
             color: white;
+        }
+        .overlay-tela-cheia {
+            padding: 0;
+        }
+        #modalForm.modal-tela-cheia {
+            width: 100%;
+            max-width: 100%;
+            height: 100%;
+            max-height: 100%;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+            padding: calc(18px + env(safe-area-inset-top, 0px)) 18px calc(18px + env(safe-area-inset-bottom, 0px));
+            animation: slideInTelaCheia 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+        @keyframes slideInTelaCheia {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-tela-cheia .modal-fechar {
+            top: calc(14px + env(safe-area-inset-top, 0px));
+        }
+        .modal-tela-cheia h3 {
+            margin-top: 4px;
+            padding-right: 40px;
         }
         .modal h3 {
             font-family: 'Playfair Display', serif;
@@ -890,8 +915,8 @@
     </div>
 </div>
 
-<div class="overlay" id="overlayForm">
-    <div class="modal" id="modalForm" style="max-width:460px;">
+<div class="overlay overlay-tela-cheia" id="overlayForm">
+    <div class="modal modal-tela-cheia" id="modalForm">
         <button class="modal-fechar" id="fecharForm"><i class="fa-solid fa-xmark"></i></button>
         <h3>Agendar Atendimento</h3>
         <p class="subtitulo" id="subtituloForm"></p>
@@ -1061,10 +1086,10 @@
         const AGNAIL_WORKER_URL = 'https://agnails-agendamento-worker.tecminia.workers.dev';
 
         const TEMAS = [
-            { id: 'rosa', cores: { bg: '#fdf6f9', card: '#ffffff', rosa: '#e4a5b8', rosaEscuro: '#c47d8f', rosaClaro: '#fbeaef', lilas: '#d5c3e0', lilasClaro: '#f3ecf8', bege: '#f5ece3', nude: '#efe3d8', verde: '#8fd8ac', verdeEscuro: '#4da679', vermelho: '#f2a8c5', vermelhoEscuro: '#e2789f', texto: '#5d4a5c', textoClaro: '#8a7a89' } },
-            { id: 'lilas', cores: { bg: '#f8f5fc', card: '#ffffff', rosa: '#d5c3e0', rosaEscuro: '#b89fc9', rosaClaro: '#f3ecf8', lilas: '#c9b8d4', lilasClaro: '#f0eaf5', bege: '#f5f0f0', nude: '#ede6e6', verde: '#8fd8ac', verdeEscuro: '#4da679', vermelho: '#f2a8c5', vermelhoEscuro: '#e2789f', texto: '#4a3e4a', textoClaro: '#7a6e7a' } },
-            { id: 'menta', cores: { bg: '#f2faf5', card: '#ffffff', rosa: '#b5d8c3', rosaEscuro: '#7dab8e', rosaClaro: '#eaf7ef', lilas: '#c9d8d0', lilasClaro: '#e8f2ec', bege: '#f5ece3', nude: '#efe3d8', verde: '#8fd8ac', verdeEscuro: '#3d6b4a', vermelho: '#f2a8c5', vermelhoEscuro: '#e2789f', texto: '#2d4a3a', textoClaro: '#5a7a6a' } },
-            { id: 'azul', cores: { bg: '#f2f8fc', card: '#ffffff', rosa: '#a8c8e0', rosaEscuro: '#6f9dc0', rosaClaro: '#e6f1f8', lilas: '#c3d4e0', lilasClaro: '#ecf3f8', bege: '#f5ece3', nude: '#efe3d8', verde: '#8fd8ac', verdeEscuro: '#4da679', vermelho: '#f2a8c5', vermelhoEscuro: '#e2789f', texto: '#2d3e4a', textoClaro: '#5a6e7a' } }
+            { id: 'rosa', cores: { bg: '#fdf6f9', card: '#ffffff', rosa: '#e4a5b8', rosaEscuro: '#c47d8f', rosaClaro: '#fbeaef', lilas: '#d5c3e0', lilasClaro: '#f3ecf8', bege: '#f5ece3', nude: '#efe3d8', verde: '#a3ddbc', verdeEscuro: '#5cb083', vermelho: '#f0b6cd', vermelhoEscuro: '#de90ab', texto: '#5d4a5c', textoClaro: '#8a7a89' } },
+            { id: 'lilas', cores: { bg: '#f8f5fc', card: '#ffffff', rosa: '#d5c3e0', rosaEscuro: '#b89fc9', rosaClaro: '#f3ecf8', lilas: '#c9b8d4', lilasClaro: '#f0eaf5', bege: '#f5f0f0', nude: '#ede6e6', verde: '#a3ddbc', verdeEscuro: '#5cb083', vermelho: '#f0b6cd', vermelhoEscuro: '#de90ab', texto: '#4a3e4a', textoClaro: '#7a6e7a' } },
+            { id: 'menta', cores: { bg: '#f2faf5', card: '#ffffff', rosa: '#b5d8c3', rosaEscuro: '#7dab8e', rosaClaro: '#eaf7ef', lilas: '#c9d8d0', lilasClaro: '#e8f2ec', bege: '#f5ece3', nude: '#efe3d8', verde: '#a3ddbc', verdeEscuro: '#3d6b4a', vermelho: '#f0b6cd', vermelhoEscuro: '#de90ab', texto: '#2d4a3a', textoClaro: '#5a7a6a' } },
+            { id: 'azul', cores: { bg: '#f2f8fc', card: '#ffffff', rosa: '#a8c8e0', rosaEscuro: '#6f9dc0', rosaClaro: '#e6f1f8', lilas: '#c3d4e0', lilasClaro: '#ecf3f8', bege: '#f5ece3', nude: '#efe3d8', verde: '#a3ddbc', verdeEscuro: '#5cb083', vermelho: '#f0b6cd', vermelhoEscuro: '#de90ab', texto: '#2d3e4a', textoClaro: '#5a6e7a' } }
         ];
 
         function aplicarTemaIndex(temaId) {
