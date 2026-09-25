@@ -30,6 +30,9 @@ const AGNAIL_ALVO_IMG_KB = 750;
 const AGNAIL_MAX_PDF_KB = 800;
 const AGNAIL_DIAS_RETENCAO_EXCLUSAO = 90;
 const AGNAIL_MIN_PROFISSIONAIS_STUDIO = 2;
+// Intervalo entre horários de atendimento travado em 1h para todas as contas
+// (ver painel/manicures.html e regras_seguranca.txt, meta/configuracoes).
+const AGNAIL_INTERVALO_ATENDIMENTO_MINUTOS = 60;
 
 function agnailLoginGoogle() {
   // F18: em navegadores/WebViews que bloqueiam pop-up (comum em apps móveis
@@ -278,7 +281,7 @@ async function agnailCriarEstruturaInicial(user) {
     imagem: '',
     horarioInicio: '',
     horarioFim: '',
-    intervaloMinutos: 60,
+    intervaloMinutos: AGNAIL_INTERVALO_ATENDIMENTO_MINUTOS,
     diasFolga: [],
     folgas: [],
     tema: 'rosa',

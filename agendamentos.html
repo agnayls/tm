@@ -64,33 +64,56 @@
         }
 
         .header {
-            text-align: center;
-            padding: 20px 16px 16px;
+            position: relative;
+            overflow: hidden;
+            padding: 22px 20px;
+            margin-bottom: 14px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, var(--rosa-claro) 0%, var(--lilas-claro) 100%);
+            box-shadow: var(--sombra);
+        }
+        .header::before,
+        .header::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+        }
+        .header::before { width: 130px; height: 130px; top: -70px; right: -45px; }
+        .header::after { width: 74px; height: 74px; bottom: -36px; left: -18px; background: rgba(255, 255, 255, 0.28); }
+        .header-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
         .header-logo {
-            width: 76px;
-            height: 76px;
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
             object-fit: cover;
-            background: var(--rosa-claro);
+            background: var(--card);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 12px;
-            font-size: 32px;
+            font-size: 28px;
             color: var(--rosa-escuro);
             box-shadow: var(--sombra);
             border: 3px solid white;
             overflow: hidden;
+            flex-shrink: 0;
         }
         .header-logo img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
+        .header-text { text-align: left; min-width: 0; }
         .header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 500;
             color: var(--texto);
             letter-spacing: -0.3px;
@@ -106,10 +129,26 @@
         .calendario-card {
             background: var(--card);
             border-radius: var(--radius);
-            padding: 18px 14px;
+            padding: 20px 16px;
             box-shadow: var(--sombra);
             margin-bottom: 12px;
             border: 1px solid rgba(228, 165, 184, 0.12);
+        }
+        .calendario-titulo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--texto);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid rgba(228, 165, 184, 0.2);
+        }
+        .calendario-titulo i {
+            color: var(--rosa-escuro);
+            font-size: 1rem;
         }
         .calendario-header {
             display: flex;
@@ -161,7 +200,7 @@
         .dias-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
+            gap: 6px;
             text-align: center;
         }
         .dia-cell {
@@ -169,9 +208,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            font-size: 0.85rem;
-            font-weight: 500;
+            border-radius: 14px;
+            font-size: 0.92rem;
+            font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
             position: relative;
@@ -179,7 +218,7 @@
             background: transparent;
             color: var(--texto);
             touch-action: manipulation;
-            min-height: 40px;
+            min-height: 42px;
         }
         .dia-cell.fora-range {
             opacity: 0.3;
@@ -234,27 +273,45 @@
         }
         .legenda {
             display: flex;
-            gap: 16px;
+            gap: 18px;
             justify-content: center;
-            margin-top: 12px;
-            font-size: 0.7rem;
-            color: var(--texto-claro);
+            margin-top: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--texto);
             flex-wrap: wrap;
         }
         .legenda span {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 7px;
         }
         .bolinha {
-            width: 10px;
-            height: 10px;
+            width: 13px;
+            height: 13px;
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
         }
         .bolinha.verde { background: var(--verde); }
         .bolinha.vermelha { background: var(--vermelho); }
+
+        .rodape-decorativo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 16px 6px 6px;
+            opacity: 0.55;
+        }
+        .rodape-decorativo .linha {
+            flex: 1;
+            height: 1px;
+            background: var(--rosa);
+        }
+        .rodape-decorativo i {
+            color: var(--rosa-escuro);
+            font-size: 0.85rem;
+        }
 
         .overlay {
             position: fixed;
@@ -598,10 +655,11 @@
 
         @media (max-width: 480px) {
             .container { padding: 10px; }
-            .header { padding: 12px 8px; }
-            .header-logo { width: 64px; height: 64px; font-size: 28px; }
+            .header { padding: 16px 14px; border-radius: 22px; }
+            .header-logo { width: 54px; height: 54px; font-size: 22px; }
+            .header h1 { font-size: 1.2rem; }
             .calendario-card { padding: 14px 10px; }
-            .dia-cell { font-size: 0.8rem; min-height: 36px; }
+            .dia-cell { font-size: 0.8rem; min-height: 36px; border-radius: 11px; }
             .horarios-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
             .horario-btn { padding: 10px 2px; font-size: 0.8rem; }
             .modal { padding: 16px 12px; }
@@ -661,12 +719,20 @@
 
 <div class="container">
     <header class="header">
-        <div class="header-logo" id="headerLogo"><i class="fa-solid fa-spa"></i></div>
-        <h1 id="headerNome">Agnayls</h1>
-        <p class="slogan" id="headerSlogan">Agendamento inteligente</p>
+        <div class="header-inner">
+            <div class="header-logo" id="headerLogo"><i class="fa-solid fa-spa"></i></div>
+            <div class="header-text">
+                <h1 id="headerNome">Agnayls</h1>
+                <p class="slogan" id="headerSlogan">Agendamento inteligente</p>
+            </div>
+        </div>
     </header>
 
     <div class="calendario-card" id="calendarioCard">
+        <div class="calendario-titulo">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>Escolha uma data</span>
+        </div>
         <div class="calendario-header">
             <button id="btnMesAnterior" title="Mês anterior"><i class="fa-solid fa-chevron-left"></i></button>
             <span class="calendario-mes" id="calendarioMes"></span>
@@ -684,6 +750,11 @@
     <p style="text-align:center;color:var(--texto-claro);font-size:0.75rem;margin-top:4px;">
         Selecione uma data para ver os horários disponíveis
     </p>
+    <div class="rodape-decorativo">
+        <span class="linha"></span>
+        <i class="fa-solid fa-spa"></i>
+        <span class="linha"></span>
+    </div>
 </div>
 
 <div class="overlay" id="overlayHorarios">

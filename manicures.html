@@ -941,10 +941,10 @@
 
                 <div class="form-group">
                     <label style="font-weight:600; font-size:0.9rem; display:block; margin-bottom:4px;"><i class="fa-solid fa-clock"></i> Horário de atendimento *</label>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
                         <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem;">Início: <input type="time" id="configHoraInicioInicial" required style="padding:6px 10px; border-radius:50px; border:2px solid #e8dfe4;"></label>
                         <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem;">Fim: <input type="time" id="configHoraFimInicial" required style="padding:6px 10px; border-radius:50px; border:2px solid #e8dfe4;"></label>
-                        <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem;">Intervalo (min): <input type="number" id="configIntervaloInicial" placeholder="Ex: 60" step="15" min="30" style="width:80px; padding:6px 10px; border-radius:50px; border:2px solid #e8dfe4;"></label>
+                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.8rem; color:var(--texto-claro); background:var(--rosa-claro); border-radius:50px; padding:6px 12px;"><i class="fa-solid fa-lock"></i> Intervalo entre horários: <strong style="color:var(--texto);">1 hora</strong></span>
                     </div>
                 </div>
 
@@ -1085,8 +1085,9 @@
                     <input type="time" id="configHoraInicio">
                     <label>Fim:</label>
                     <input type="time" id="configHoraFim">
-                    <label>Intervalo (min):</label>
-                    <input type="number" id="configIntervalo" min="30" max="180" step="15" style="width:80px;">
+                </div>
+                <div style="display:inline-flex; align-items:center; gap:6px; font-size:0.8rem; color:var(--texto-claro); background:var(--rosa-claro); border-radius:50px; padding:6px 12px; margin-top:2px;">
+                    <i class="fa-solid fa-lock"></i> Intervalo entre horários: <strong style="color:var(--texto);">1 hora</strong> (padrão fixo)
                 </div>
             </div>
 
@@ -1315,6 +1316,14 @@
 
         const manicureRef = Agnayls.manicureRef(usuarioAtual.uid);
 
+        // Intervalo entre horários de atendimento travado em 1h para todas as
+        // contas — deixou de ser configurável pela manicure (era um campo livre
+        // de 15 a 480 min, o que gerava agendas com granularidades inconsistentes
+        // entre profissionais/estúdios). O valor ainda é salvo em
+        // configuracoes.intervaloMinutos (lido por agendamentos.html e pelo
+        // worker) só que agora sempre como este fixo.
+        const AGNAIL_INTERVALO_FIXO_MINUTOS = 60;
+
         function renderizarServicosIniciais(servicos) {
             const container = document.getElementById('servicosIniciaisLista');
             container.innerHTML = servicos.map((s, i) => `
@@ -1442,7 +1451,6 @@
                 document.getElementById('configWhatsappInicial').value = '';
                 document.getElementById('configHoraInicioInicial').value = '';
                 document.getElementById('configHoraFimInicial').value = '';
-                document.getElementById('configIntervaloInicial').value = '';
 
                 document.getElementById('previewLogoImg').src = '';
                 document.getElementById('previewLogoInicial').style.display = 'none';
@@ -1472,8 +1480,7 @@
             const whatsapp = document.getElementById('configWhatsappInicial').value.replace(/\D/g, '');
             const horarioInicio = document.getElementById('configHoraInicioInicial').value;
             const horarioFim = document.getElementById('configHoraFimInicial').value;
-            let intervalo = parseInt(document.getElementById('configIntervaloInicial').value) || 60;
-            intervalo = Math.min(480, Math.max(15, intervalo));
+            const intervalo = AGNAIL_INTERVALO_FIXO_MINUTOS;
             const servicos = window._servicosIniciais || [];
 
             const formasPagamento = [];
@@ -2647,7 +2654,12 @@
             document.getElementById('configWhatsapp').value = config.whatsapp ? Agnayls.mascararCelular(config.whatsapp) : '';
             document.getElementById('configHoraInicio').value = config.horarioInicio || '';
             document.getElementById('configHoraFim').value = config.horarioFim || '';
-            document.getElementById('configIntervalo').value = config.intervaloMinutos || '';
+            if (config.intervaloMinutos !== AGNAIL_INTERVALO_FIXO_MINUTOS) {
+                // Contas antigas podem ter um valor herdado de quando o intervalo
+                // ainda era configurável — realinha silenciosamente para o fixo.
+                config.intervaloMinutos = AGNAIL_INTERVALO_FIXO_MINUTOS;
+                salvarConfigAuto();
+            }
             renderizarServicosConfig();
             carregarPagamentosConfig();
             renderizarDiasFolgaConfig();
@@ -2890,14 +2902,6 @@
             config.horarioFim = this.value;
             salvarConfigAuto();
         });
-        document.getElementById('configIntervalo').addEventListener('change', function() {
-            let valor = parseInt(this.value) || 60;
-            valor = Math.min(480, Math.max(15, valor));
-            this.value = valor;
-            config.intervaloMinutos = valor;
-            salvarConfigAuto();
-        });
-
         Agnayls.aplicarMascaraCelular(document.getElementById('configWhatsapp'));
 
         function mostrarToastPainel(msg, tipo) {
