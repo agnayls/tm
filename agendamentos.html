@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Alex+Brush&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
     <style>
         :root {
@@ -21,12 +21,13 @@
             --lilas-claro: #f3ecf8;
             --bege: #f5ece3;
             --nude: #efe3d8;
-            --verde: #b5d8c3;
-            --verde-escuro: #7dab8e;
-            --vermelho: #e8b4b8;
-            --vermelho-escuro: #c48d92;
+            --verde: #8fd8ac;
+            --verde-escuro: #4da679;
+            --vermelho: #f2a8c5;
+            --vermelho-escuro: #e2789f;
             --texto: #5d4a5c;
             --texto-claro: #8a7a89;
+            --linha: rgba(93, 74, 92, 0.14);
             --sombra: 0 4px 20px rgba(180, 150, 170, 0.15);
             --sombra-lg: 0 12px 40px rgba(180, 150, 170, 0.2);
             --radius: 20px;
@@ -58,19 +59,17 @@
             max-width: 520px;
             margin: 0 auto;
             padding: 16px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
         .header {
             position: relative;
             overflow: hidden;
-            padding: 22px 20px;
+            padding: 26px 20px 24px;
             margin-bottom: 14px;
             border-radius: 28px;
             background: linear-gradient(135deg, var(--rosa-claro) 0%, var(--lilas-claro) 100%);
             box-shadow: var(--sombra);
+            border: 1.5px solid rgba(228, 165, 184, 0.35);
         }
         .header::before,
         .header::after {
@@ -82,14 +81,59 @@
         }
         .header::before { width: 130px; height: 130px; top: -70px; right: -45px; }
         .header::after { width: 74px; height: 74px; bottom: -36px; left: -18px; background: rgba(255, 255, 255, 0.28); }
+        .enfeite-topo {
+            position: absolute;
+            top: -8px;
+            right: 10px;
+            width: 68px;
+            height: 68px;
+            opacity: 0.55;
+            pointer-events: none;
+        }
+        .moldura-flor ellipse {
+            fill: none;
+            stroke: var(--rosa-escuro);
+            stroke-width: 1.1;
+            opacity: 0.65;
+        }
+        .moldura-miolo { fill: var(--rosa-escuro); opacity: 0.75; }
+        .moldura-folha {
+            fill: none;
+            stroke: var(--verde-escuro);
+            stroke-width: 1.4;
+            stroke-linecap: round;
+            opacity: 0.55;
+        }
+        .moldura-anel {
+            fill: none;
+            stroke: var(--rosa-escuro);
+            stroke-width: 1;
+            stroke-dasharray: 1.6 5;
+            opacity: 0.35;
+        }
         .header-inner {
             position: relative;
             z-index: 1;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
+        }
+        .header-logo-wrap {
+            position: relative;
+            width: 68px;
+            height: 68px;
+            flex-shrink: 0;
+        }
+        .logo-moldura {
+            position: absolute;
+            inset: -20px;
+            width: calc(100% + 40px);
+            height: calc(100% + 40px);
+            pointer-events: none;
         }
         .header-logo {
+            position: relative;
+            z-index: 1;
             width: 68px;
             height: 68px;
             border-radius: 50%;
@@ -110,20 +154,24 @@
             height: 100%;
             object-fit: cover;
         }
-        .header-text { text-align: left; min-width: 0; }
+        .header-text { position: relative; z-index: 1; text-align: left; min-width: 0; }
         .header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 500;
-            color: var(--texto);
-            letter-spacing: -0.3px;
+            font-family: 'Alex Brush', cursive;
+            font-weight: 400;
+            font-size: 2.3rem;
+            line-height: 1;
+            color: var(--rosa-escuro);
+            letter-spacing: 0.5px;
+            overflow-wrap: break-word;
         }
         .header .slogan {
-            font-size: 0.85rem;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 0.88rem;
             color: var(--texto-claro);
             font-weight: 400;
-            margin-top: 2px;
-            font-style: italic;
+            margin-top: 4px;
+            letter-spacing: 0.2px;
         }
 
         .calendario-card {
@@ -132,7 +180,7 @@
             padding: 20px 16px;
             box-shadow: var(--sombra);
             margin-bottom: 12px;
-            border: 1px solid rgba(228, 165, 184, 0.12);
+            border: 1.5px solid rgba(228, 165, 184, 0.3);
         }
         .calendario-titulo {
             display: flex;
@@ -193,9 +241,11 @@
             font-size: 0.7rem;
             font-weight: 700;
             color: var(--texto-claro);
-            margin-bottom: 6px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            border-bottom: 1.5px solid var(--linha);
         }
         .dias-grid {
             display: grid;
@@ -214,50 +264,53 @@
             cursor: pointer;
             transition: var(--transition);
             position: relative;
-            border: 2px solid transparent;
-            background: transparent;
+            border: 1.5px solid var(--linha);
+            background: rgba(93, 74, 92, 0.02);
             color: var(--texto);
             touch-action: manipulation;
             min-height: 42px;
         }
         .dia-cell.fora-range {
-            opacity: 0.3;
+            opacity: 0.35;
             cursor: default;
             pointer-events: none;
         }
         .dia-cell.outro-mes {
-            opacity: 0.3;
-            cursor: default;
+            opacity: 0;
             pointer-events: none;
+            border-color: transparent;
+            background: transparent;
         }
         .dia-cell.hoje {
-            border: 2px solid var(--rosa);
+            border: 2px solid var(--rosa-escuro);
             font-weight: 700;
         }
         .dia-cell.disponivel {
-            background: #eaf7ef;
-            color: var(--verde-escuro);
-            font-weight: 600;
+            background: var(--verde);
+            color: #204a30;
+            font-weight: 700;
             cursor: pointer;
-            border: 2px solid transparent;
+            border: 1.5px solid rgba(77, 166, 121, 0.55);
         }
         .dia-cell.disponivel:hover {
-            background: var(--verde);
-            color: #3d6b4a;
+            background: var(--verde-escuro);
+            color: #fff;
             transform: scale(1.08);
-            box-shadow: 0 4px 14px rgba(181, 216, 195, 0.5);
+            box-shadow: 0 4px 14px rgba(77, 166, 121, 0.45);
             border-color: var(--verde-escuro);
         }
         .dia-cell.indisponivel {
-            background: #fef0f1;
-            color: var(--vermelho-escuro);
+            background: var(--vermelho);
+            color: #74213f;
             cursor: pointer;
-            border: 2px solid transparent;
-            font-weight: 500;
+            border: 1.5px solid rgba(226, 120, 159, 0.5);
+            font-weight: 600;
         }
         .dia-cell.indisponivel:hover {
-            background: var(--vermelho);
+            background: var(--vermelho-escuro);
+            color: #fff;
             transform: scale(1.05);
+            box-shadow: 0 4px 14px rgba(226, 120, 159, 0.4);
         }
         .dia-cell.selecionado {
             background: var(--rosa) !important;
@@ -285,16 +338,21 @@
             display: flex;
             align-items: center;
             gap: 7px;
+            padding: 6px 13px;
+            border-radius: 50px;
+            background: var(--card);
+            border: 1.5px solid var(--linha);
+            box-shadow: 0 2px 8px rgba(180, 150, 170, 0.1);
         }
         .bolinha {
-            width: 13px;
-            height: 13px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
         }
-        .bolinha.verde { background: var(--verde); }
-        .bolinha.vermelha { background: var(--vermelho); }
+        .bolinha.verde { background: var(--verde-escuro); }
+        .bolinha.vermelha { background: var(--vermelho-escuro); }
 
         .rodape-decorativo {
             display: flex;
@@ -306,12 +364,25 @@
         .rodape-decorativo .linha {
             flex: 1;
             height: 1px;
-            background: var(--rosa);
+            background: var(--linha);
         }
         .rodape-decorativo i {
             color: var(--rosa-escuro);
             font-size: 0.85rem;
         }
+        .rodape-links {
+            text-align: center;
+            padding: 2px 10px 6px;
+            font-size: 0.75rem;
+        }
+        .rodape-links a {
+            color: var(--texto-claro);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .rodape-links a:last-child { margin-bottom: 0; }
 
         .overlay {
             position: fixed;
@@ -655,9 +726,11 @@
 
         @media (max-width: 480px) {
             .container { padding: 10px; }
-            .header { padding: 16px 14px; border-radius: 22px; }
-            .header-logo { width: 54px; height: 54px; font-size: 22px; }
-            .header h1 { font-size: 1.2rem; }
+            .header { padding: 18px 14px 16px; border-radius: 22px; }
+            .header-logo, .header-logo-wrap { width: 54px; height: 54px; }
+            .header-logo { font-size: 22px; }
+            .header h1 { font-size: 1.8rem; }
+            .enfeite-topo { width: 52px; height: 52px; top: -6px; right: 4px; }
             .calendario-card { padding: 14px 10px; }
             .dia-cell { font-size: 0.8rem; min-height: 36px; border-radius: 11px; }
             .horarios-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -719,8 +792,43 @@
 
 <div class="container">
     <header class="header">
+        <svg class="enfeite-topo" viewBox="0 0 90 90" aria-hidden="true">
+            <g class="moldura-flor" transform="translate(45,22)">
+                <ellipse cx="0" cy="-7" rx="4.4" ry="7.6"></ellipse>
+                <ellipse cx="0" cy="-7" rx="4.4" ry="7.6" transform="rotate(72)"></ellipse>
+                <ellipse cx="0" cy="-7" rx="4.4" ry="7.6" transform="rotate(144)"></ellipse>
+                <ellipse cx="0" cy="-7" rx="4.4" ry="7.6" transform="rotate(216)"></ellipse>
+                <ellipse cx="0" cy="-7" rx="4.4" ry="7.6" transform="rotate(288)"></ellipse>
+                <circle class="moldura-miolo" cx="0" cy="0" r="2.8"></circle>
+            </g>
+            <path class="moldura-folha" d="M18,56 C 28,46 28,36 18,29"></path>
+            <path class="moldura-folha" d="M62,60 C 70,52 70,44 64,38"></path>
+        </svg>
         <div class="header-inner">
-            <div class="header-logo" id="headerLogo"><i class="fa-solid fa-spa"></i></div>
+            <div class="header-logo-wrap">
+                <svg class="logo-moldura" viewBox="0 0 100 100" aria-hidden="true">
+                    <circle class="moldura-anel" cx="50" cy="50" r="47"></circle>
+                    <g class="moldura-flor" transform="translate(80,18)">
+                        <ellipse cx="0" cy="-6" rx="3.6" ry="6.2"></ellipse>
+                        <ellipse cx="0" cy="-6" rx="3.6" ry="6.2" transform="rotate(72)"></ellipse>
+                        <ellipse cx="0" cy="-6" rx="3.6" ry="6.2" transform="rotate(144)"></ellipse>
+                        <ellipse cx="0" cy="-6" rx="3.6" ry="6.2" transform="rotate(216)"></ellipse>
+                        <ellipse cx="0" cy="-6" rx="3.6" ry="6.2" transform="rotate(288)"></ellipse>
+                        <circle class="moldura-miolo" cx="0" cy="0" r="2.2"></circle>
+                    </g>
+                    <g class="moldura-flor" transform="translate(15,85) scale(0.72)">
+                        <ellipse cx="0" cy="-6" rx="3.6" ry="6.2"></ellipse>
+                        <ellipse cx="0" cy="-6" rx="3.6" ry="6.2" transform="rotate(72)"></ellipse>
+                        <ellipse cx="0" cy="-6" rx="3.6" ry="6.2" transform="rotate(144)"></ellipse>
+                        <ellipse cx="0" cy="-6" rx="3.6" ry="6.2" transform="rotate(216)"></ellipse>
+                        <ellipse cx="0" cy="-6" rx="3.6" ry="6.2" transform="rotate(288)"></ellipse>
+                        <circle class="moldura-miolo" cx="0" cy="0" r="2.2"></circle>
+                    </g>
+                    <path class="moldura-folha" d="M20,75 C 11,65 11,56 19,48"></path>
+                    <path class="moldura-folha" d="M84,34 C 93,41 93,49 86,56"></path>
+                </svg>
+                <div class="header-logo" id="headerLogo"><i class="fa-solid fa-spa"></i></div>
+            </div>
             <div class="header-text">
                 <h1 id="headerNome">Agnayls</h1>
                 <p class="slogan" id="headerSlogan">Agendamento inteligente</p>
@@ -754,6 +862,10 @@
         <span class="linha"></span>
         <i class="fa-solid fa-spa"></i>
         <span class="linha"></span>
+    </div>
+    <div class="rodape-links">
+        <a href="#" id="linkSuporteAgendamento">Precisa de ajuda? Fale com o Suporte</a>
+        <a href="#" id="linkConsultarTermosCliente">Termos de Uso e Política de Privacidade</a>
     </div>
 </div>
 
@@ -850,11 +962,6 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
-<div style="text-align:center; padding:16px 10px 90px; font-size:0.75rem;">
-    <a href="#" id="linkSuporteAgendamento" style="color:var(--texto-claro); text-decoration:underline; display:block; margin-bottom:8px;">Precisa de ajuda? Fale com o Suporte</a>
-    <a href="#" id="linkConsultarTermosCliente" style="color:var(--texto-claro); text-decoration:underline;">Termos de Uso e Política de Privacidade</a>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-auth-compat.js"></script>
@@ -954,10 +1061,10 @@
         const AGNAIL_WORKER_URL = 'https://agnails-agendamento-worker.tecminia.workers.dev';
 
         const TEMAS = [
-            { id: 'rosa', cores: { bg: '#fdf6f9', card: '#ffffff', rosa: '#e4a5b8', rosaEscuro: '#c47d8f', rosaClaro: '#fbeaef', lilas: '#d5c3e0', lilasClaro: '#f3ecf8', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#5d4a5c', textoClaro: '#8a7a89' } },
-            { id: 'lilas', cores: { bg: '#f8f5fc', card: '#ffffff', rosa: '#d5c3e0', rosaEscuro: '#b89fc9', rosaClaro: '#f3ecf8', lilas: '#c9b8d4', lilasClaro: '#f0eaf5', bege: '#f5f0f0', nude: '#ede6e6', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#4a3e4a', textoClaro: '#7a6e7a' } },
-            { id: 'menta', cores: { bg: '#f2faf5', card: '#ffffff', rosa: '#b5d8c3', rosaEscuro: '#7dab8e', rosaClaro: '#eaf7ef', lilas: '#c9d8d0', lilasClaro: '#e8f2ec', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#3d6b4a', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#2d4a3a', textoClaro: '#5a7a6a' } },
-            { id: 'azul', cores: { bg: '#f2f8fc', card: '#ffffff', rosa: '#a8c8e0', rosaEscuro: '#6f9dc0', rosaClaro: '#e6f1f8', lilas: '#c3d4e0', lilasClaro: '#ecf3f8', bege: '#f5ece3', nude: '#efe3d8', verde: '#b5d8c3', verdeEscuro: '#7dab8e', vermelho: '#e8b4b8', vermelhoEscuro: '#c48d92', texto: '#2d3e4a', textoClaro: '#5a6e7a' } }
+            { id: 'rosa', cores: { bg: '#fdf6f9', card: '#ffffff', rosa: '#e4a5b8', rosaEscuro: '#c47d8f', rosaClaro: '#fbeaef', lilas: '#d5c3e0', lilasClaro: '#f3ecf8', bege: '#f5ece3', nude: '#efe3d8', verde: '#8fd8ac', verdeEscuro: '#4da679', vermelho: '#f2a8c5', vermelhoEscuro: '#e2789f', texto: '#5d4a5c', textoClaro: '#8a7a89' } },
+            { id: 'lilas', cores: { bg: '#f8f5fc', card: '#ffffff', rosa: '#d5c3e0', rosaEscuro: '#b89fc9', rosaClaro: '#f3ecf8', lilas: '#c9b8d4', lilasClaro: '#f0eaf5', bege: '#f5f0f0', nude: '#ede6e6', verde: '#8fd8ac', verdeEscuro: '#4da679', vermelho: '#f2a8c5', vermelhoEscuro: '#e2789f', texto: '#4a3e4a', textoClaro: '#7a6e7a' } },
+            { id: 'menta', cores: { bg: '#f2faf5', card: '#ffffff', rosa: '#b5d8c3', rosaEscuro: '#7dab8e', rosaClaro: '#eaf7ef', lilas: '#c9d8d0', lilasClaro: '#e8f2ec', bege: '#f5ece3', nude: '#efe3d8', verde: '#8fd8ac', verdeEscuro: '#3d6b4a', vermelho: '#f2a8c5', vermelhoEscuro: '#e2789f', texto: '#2d4a3a', textoClaro: '#5a7a6a' } },
+            { id: 'azul', cores: { bg: '#f2f8fc', card: '#ffffff', rosa: '#a8c8e0', rosaEscuro: '#6f9dc0', rosaClaro: '#e6f1f8', lilas: '#c3d4e0', lilasClaro: '#ecf3f8', bege: '#f5ece3', nude: '#efe3d8', verde: '#8fd8ac', verdeEscuro: '#4da679', vermelho: '#f2a8c5', vermelhoEscuro: '#e2789f', texto: '#2d3e4a', textoClaro: '#5a6e7a' } }
         ];
 
         function aplicarTemaIndex(temaId) {
