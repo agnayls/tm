@@ -2,438 +2,502 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>Agnayls — Agendamento online para studios de unhas e estética</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Agnayls | Agendamento para Studios de Unhas & Estética</title>
 <meta name="description" content="O Agnayls organiza os horários, os pagamentos e o financeiro do seu studio de beleza, com um link que a cliente usa sozinha para agendar.">
 <link rel="icon" href="assets/logo.png" type="image/png">
+<script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: {
+            50: '#fff1f5', 100: '#ffe4ec', 200: '#fecddc', 300: '#fea3c1',
+            400: '#fb6f9c', 500: '#f43f7a', 600: '#e11d62', 700: '#be124d',
+            800: '#9e1342', 900: '#84153b', deep: '#2a0914',
+          }
+        },
+        fontFamily: {
+          serif: ['"Cormorant Garamond"', 'serif'],
+          sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
 <style>
-    :root {
-        --bg: #fdf6f9;
-        --card: #ffffff;
-        --rosa: #e4a5b8;
-        --rosa-escuro: #c47d8f;
-        --rosa-claro: #fbeaef;
-        --lilas: #d5c3e0;
-        --lilas-claro: #f3ecf8;
-        --verde: #b5d8c3;
-        --verde-escuro: #7dab8e;
-        --verde-claro: #eaf7ef;
-        --amarelo-claro: #fdf3d6;
-        --amarelo-escuro: #a9821f;
-        --vermelho: #e8b4b8;
-        --texto: #5d4a5c;
-        --texto-claro: #8a7a89;
-        --sombra: 0 4px 20px rgba(180, 150, 170, 0.15);
-        --sombra-lg: 0 16px 46px rgba(180, 150, 170, 0.22);
-        --radius: 22px;
-        --radius-sm: 14px;
-        --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-        font-family: 'Nunito', system-ui, -apple-system, sans-serif;
-        background: var(--bg);
-        color: var(--texto);
-        -webkit-font-smoothing: antialiased;
-        overflow-x: hidden;
-    }
-    img, svg { max-width: 100%; display: block; }
-    a { color: inherit; }
-    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
-    .col { max-width: 620px; }
-    section { position: relative; }
+  body {
+    background-color: #120408;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    overscroll-behavior: none;
+  }
+  .stories-container {
+    aspect-ratio: 9 / 16;
+    max-height: 100vh;
+    max-height: 100dvh;
+    width: 100%;
+    max-width: 430px;
+  }
+  .story-slide {
+    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.35s ease;
+    position: absolute;
+    inset: 0;
+  }
+  .story-slide.active { transform: translateX(0); opacity: 1; pointer-events: auto; z-index: 10; }
+  .story-slide.prev { transform: translateX(-100%); opacity: 0; pointer-events: none; z-index: 5; }
+  .story-slide.next { transform: translateX(100%); opacity: 0; pointer-events: none; z-index: 5; }
+  .glass-pill {
+    background: rgba(255, 240, 245, 0.15);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  .glass-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 215, 228, 0.06) 100%);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 12px 32px 0 rgba(190, 18, 77, 0.18);
+  }
+  .tap-zone { position: absolute; top: 75px; bottom: 110px; width: 45%; z-index: 30; cursor: pointer; }
+  .tap-left { left: 0; }
+  .tap-right { right: 0; }
+  .blob { position: absolute; border-radius: 9999px; filter: blur(52px); pointer-events: none; }
+  @keyframes pulse-soft {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+  }
+  .pulse-btn { animation: pulse-soft 2.2s infinite ease-in-out; }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(1.25); }
+  }
+  .twinkle { animation: twinkle 2.6s ease-in-out infinite; }
 
-    /* ---------- Topbar ---------- */
-    .topbar {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 20px 24px; max-width: 1080px; margin: 0 auto;
-    }
-    .marca { display: flex; align-items: center; gap: 10px; font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--texto); }
-    .marca .icone {
-        width: 38px; height: 38px; border-radius: 50%; background: var(--rosa-claro);
-        display: flex; align-items: center; justify-content: center; color: var(--rosa-escuro); font-size: 16px;
-        border: 2px solid #fff; box-shadow: var(--sombra);
-    }
-    .topbar .btn-entrar {
-        font-size: 0.85rem; font-weight: 700; color: var(--rosa-escuro); text-decoration: none;
-        padding: 9px 18px; border-radius: 50px; border: 2px solid var(--rosa);
-        transition: var(--transition);
-    }
-    .topbar .btn-entrar:hover { background: var(--rosa-claro); }
-
-    /* ---------- Hero ---------- */
-    .hero {
-        padding: 28px 24px 64px;
-        background:
-            radial-gradient(ellipse 640px 420px at 82% -8%, rgba(228,165,184,0.22) 0%, transparent 60%),
-            radial-gradient(ellipse 520px 380px at 8% 18%, rgba(213,195,224,0.22) 0%, transparent 60%);
-    }
-    .hero-grid {
-        max-width: 1080px; margin: 0 auto;
-        display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 48px; align-items: center;
-    }
-    .hero h1 {
-        font-family: 'Playfair Display', serif;
-        font-weight: 600;
-        font-size: clamp(2rem, 4.2vw, 2.9rem);
-        line-height: 1.18;
-        color: var(--texto);
-        letter-spacing: -0.5px;
-    }
-    .hero p.sub {
-        margin-top: 18px;
-        font-size: 1.05rem;
-        line-height: 1.6;
-        color: var(--texto-claro);
-        max-width: 480px;
-    }
-    .hero-ctas { display: flex; align-items: center; gap: 16px; margin-top: 30px; flex-wrap: wrap; }
-    .btn-primario {
-        display: inline-flex; align-items: center; gap: 10px;
-        background: var(--rosa-escuro); color: #fff; text-decoration: none;
-        padding: 15px 30px; border-radius: 50px; font-weight: 700; font-size: 0.98rem;
-        box-shadow: 0 10px 26px rgba(196, 125, 143, 0.38);
-        transition: var(--transition);
-    }
-    .btn-primario:hover { background: #b56e80; transform: translateY(-2px); box-shadow: 0 14px 30px rgba(196, 125, 143, 0.45); }
-    .hero-nota { font-size: 0.82rem; color: var(--texto-claro); }
-    .hero-nota strong { color: var(--rosa-escuro); }
-
-    /* ---- mini agenda mockup ---- */
-    .mini-agenda {
-        background: var(--card);
-        border-radius: 26px;
-        box-shadow: var(--sombra-lg);
-        padding: 22px 20px;
-        border: 1px solid rgba(228,165,184,0.15);
-        transform: rotate(1.4deg);
-    }
-    .mini-agenda .cabecalho {
-        display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-    }
-    .mini-agenda .cabecalho span { font-weight: 700; font-size: 0.9rem; color: var(--texto); }
-    .mini-agenda .cabecalho i { color: var(--rosa-escuro); font-size: 0.85rem; }
-    .mini-dias { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .mini-dias span {
-        aspect-ratio: 1; border-radius: 9px; display: flex; align-items: center; justify-content: center;
-        font-size: 0.72rem; font-weight: 700; color: #fff;
-    }
-    .mini-dias span.disp { background: var(--verde-escuro); }
-    .mini-dias span.ocup { background: var(--rosa); color: #8a4a5c; }
-    .mini-dias span.fraca { background: var(--lilas-claro); color: var(--texto-claro); }
-    .mini-agenda .rodape {
-        margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(228,165,184,0.18);
-        display: flex; align-items: center; justify-content: space-between;
-    }
-    .mini-agenda .rodape .cliente { font-size: 0.78rem; }
-    .mini-agenda .rodape .cliente strong { display: block; color: var(--texto); font-size: 0.86rem; }
-    .mini-agenda .rodape .cliente span { color: var(--texto-claro); }
-    .mini-agenda .rodape .selo {
-        background: var(--verde-claro); color: var(--verde-escuro); font-size: 0.7rem; font-weight: 700;
-        padding: 5px 12px; border-radius: 50px;
-    }
-
-    /* ---------- Problema ---------- */
-    .problema { padding: 10px 24px 70px; }
-    .problema-head { max-width: 560px; margin: 0 auto 40px; text-align: center; }
-    .problema-head h2 {
-        font-family: 'Playfair Display', serif; font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.1rem);
-        color: var(--texto); line-height: 1.3;
-    }
-    .problema-grid {
-        max-width: 1080px; margin: 0 auto;
-        display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-    }
-    .problema-card {
-        background: var(--card); border-radius: var(--radius-sm); padding: 26px 22px;
-        border: 1px solid rgba(228,165,184,0.14); box-shadow: var(--sombra);
-    }
-    .problema-card i { font-size: 1.3rem; color: var(--rosa-escuro); margin-bottom: 14px; }
-    .problema-card h3 { font-size: 1rem; font-weight: 700; color: var(--texto); margin-bottom: 8px; }
-    .problema-card p { font-size: 0.88rem; color: var(--texto-claro); line-height: 1.55; }
-
-    /* ---------- Recursos ---------- */
-    .recursos { padding: 12px 24px 74px; background: linear-gradient(180deg, transparent 0%, var(--rosa-claro) 100%); }
-    .recursos-inner { max-width: 1080px; margin: 0 auto; }
-    .recursos-head { max-width: 560px; margin: 0 auto 40px; text-align: center; }
-    .recursos-head h2 {
-        font-family: 'Playfair Display', serif; font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.1rem); color: var(--texto);
-    }
-    .recursos-head p { margin-top: 10px; color: var(--texto-claro); font-size: 0.95rem; }
-    .recursos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
-    .recurso-card {
-        background: var(--card); border-radius: var(--radius-sm); padding: 24px;
-        display: flex; gap: 16px; box-shadow: var(--sombra); border: 1px solid rgba(228,165,184,0.12);
-    }
-    .recurso-card .icone {
-        width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-    }
-    .recurso-card:nth-child(1) .icone { background: var(--rosa-claro); color: var(--rosa-escuro); }
-    .recurso-card:nth-child(2) .icone { background: var(--verde-claro); color: var(--verde-escuro); }
-    .recurso-card:nth-child(3) .icone { background: var(--lilas-claro); color: #8a6ea8; }
-    .recurso-card:nth-child(4) .icone { background: var(--amarelo-claro); color: var(--amarelo-escuro); }
-    .recurso-card h3 { font-size: 0.98rem; font-weight: 700; color: var(--texto); margin-bottom: 6px; }
-    .recurso-card p { font-size: 0.86rem; color: var(--texto-claro); line-height: 1.55; }
-
-    /* ---------- Como funciona ---------- */
-    .como { padding: 76px 24px; }
-    .como-inner { max-width: 1080px; margin: 0 auto; }
-    .como-head { max-width: 560px; margin: 0 auto 44px; text-align: center; }
-    .como-head h2 {
-        font-family: 'Playfair Display', serif; font-weight: 500; font-size: clamp(1.6rem, 3vw, 2.1rem); color: var(--texto);
-    }
-    .como-passos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; counter-reset: passo; }
-    .como-passo { text-align: center; padding: 0 8px; }
-    .como-passo .num {
-        counter-increment: passo;
-        width: 46px; height: 46px; border-radius: 50%; margin: 0 auto 16px;
-        background: var(--rosa-escuro); color: #fff; font-family: 'Playfair Display', serif; font-size: 1.15rem;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .como-passo .num::before { content: counter(passo); }
-    .como-passo h3 { font-size: 1rem; font-weight: 700; color: var(--texto); margin-bottom: 8px; }
-    .como-passo p { font-size: 0.87rem; color: var(--texto-claro); line-height: 1.55; }
-
-    /* ---------- CTA final ---------- */
-    .cta-final { padding: 0 24px 80px; }
-    .cta-card {
-        max-width: 1080px; margin: 0 auto; text-align: center;
-        background: linear-gradient(135deg, var(--rosa-claro) 0%, var(--lilas-claro) 100%);
-        border-radius: 30px; padding: 58px 32px; position: relative; overflow: hidden;
-    }
-    .cta-card::before, .cta-card::after {
-        content: ''; position: absolute; border-radius: 50%; background: rgba(255,255,255,0.45); pointer-events: none;
-    }
-    .cta-card::before { width: 220px; height: 220px; top: -110px; left: -60px; }
-    .cta-card::after { width: 160px; height: 160px; bottom: -90px; right: -40px; background: rgba(255,255,255,0.3); }
-    .cta-card h2 {
-        position: relative; font-family: 'Playfair Display', serif; font-weight: 500;
-        font-size: clamp(1.6rem, 3.2vw, 2.2rem); color: var(--texto); max-width: 560px; margin: 0 auto 14px;
-        line-height: 1.3;
-    }
-    .cta-card p { position: relative; color: var(--texto-claro); font-size: 0.95rem; margin-bottom: 26px; }
-    .cta-card .btn-primario { position: relative; }
-
-    /* ---------- Footer ---------- */
-    footer { padding: 40px 24px; border-top: 1px solid rgba(228,165,184,0.2); }
-    .footer-inner {
-        max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;
-        flex-wrap: wrap; gap: 16px; font-size: 0.82rem; color: var(--texto-claro);
-    }
-    .footer-inner .marca { font-size: 0.95rem; }
-    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
-    .footer-links a, .footer-links button {
-        background: none; border: none; font-family: inherit; cursor: pointer;
-        color: var(--texto-claro); font-size: 0.82rem; text-decoration: underline; text-underline-offset: 3px;
-    }
-    .footer-links button:hover, .footer-links a:hover { color: var(--rosa-escuro); }
-
-    /* ---------- Termos overlay ---------- */
-    .overlay {
-        position: fixed; inset: 0; background: rgba(93,74,92,0.45); display: none;
-        align-items: center; justify-content: center; padding: 20px; z-index: 200;
-    }
-    .overlay.show { display: flex; }
-    .modal {
-        background: var(--card); border-radius: var(--radius); padding: 30px 26px; max-width: 540px; width: 100%;
-        max-height: 82vh; overflow-y: auto; box-shadow: var(--sombra-lg); position: relative;
-    }
-    .modal-fechar {
-        position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%;
-        border: none; background: var(--rosa-claro); color: var(--rosa-escuro); cursor: pointer; font-size: 1rem;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .modal-fechar:hover { background: var(--rosa); color: #fff; }
-    #conteudoTermosPromo { font-size: 0.86rem; line-height: 1.6; color: var(--texto); padding-right: 4px; }
-    #conteudoTermosPromo h4 { font-family: 'Playfair Display', serif; margin: 18px 0 8px; color: var(--texto); }
-    #conteudoTermosPromo h4:first-child { margin-top: 0; }
-    #conteudoTermosPromo p { margin-bottom: 10px; }
-
-    @media (max-width: 860px) {
-        .hero-grid { grid-template-columns: 1fr; gap: 40px; }
-        .hero .col, .hero p.sub { max-width: 100%; }
-        .mini-agenda { max-width: 340px; margin: 0 auto; transform: none; }
-        .problema-grid, .recursos-grid, .como-passos { grid-template-columns: 1fr; }
-        .recurso-card { max-width: 480px; margin: 0 auto; width: 100%; }
-    }
-    @media (max-width: 480px) {
-        .topbar { padding: 16px 18px; }
-        .hero { padding: 12px 18px 48px; }
-        .problema, .recursos, .como, .cta-final { padding-left: 18px; padding-right: 18px; }
-        .cta-card { padding: 42px 22px; }
-        .footer-inner { flex-direction: column; align-items: flex-start; }
-    }
+  .overlay-termos {
+    position: fixed; inset: 0; background: rgba(10, 2, 6, 0.72); display: none;
+    align-items: center; justify-content: center; padding: 18px; z-index: 200;
+  }
+  .overlay-termos.show { display: flex; }
+  .modal-termos {
+    background: #fffaf9; color: #4a2b38; border-radius: 22px; padding: 26px 22px; max-width: 480px;
+    width: 100%; max-height: 82vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .modal-termos h4 { font-family: 'Cormorant Garamond', serif; margin: 16px 0 6px; color: #7a1440; font-size: 1.15rem; }
+  .modal-termos h4:first-child { margin-top: 0; }
+  .modal-termos p { font-size: 0.85rem; line-height: 1.6; margin-bottom: 8px; }
+  .fechar-termos {
+    position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%;
+    border: none; background: #ffe4ec; color: #be124d; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
 </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen p-0 sm:p-4 overflow-hidden bg-gradient-to-b from-[#1b050f] via-[#100308] to-[#080104] text-white">
 
-<div class="topbar">
-    <div class="marca"><span class="icone"><i class="fa-solid fa-spa"></i></span> Agnayls</div>
-    <a class="btn-entrar" href="https://www.agnayls.com.br/index">Entrar</a>
-</div>
+<main class="stories-container relative mx-auto overflow-hidden sm:rounded-[36px] shadow-2xl border border-pink-900/30 bg-black flex flex-col justify-between">
 
-<section class="hero">
-    <div class="hero-grid">
-        <div class="col">
-            <h1>Sua agenda ainda vive dentro do WhatsApp?</h1>
-            <p class="sub">O Agnayls organiza os horários, os pagamentos e o financeiro do seu studio de unhas ou de estética — com um link que a própria cliente usa para agendar, sem trocar uma única mensagem com você.</p>
-            <div class="hero-ctas">
-                <a class="btn-primario" href="https://www.agnayls.com.br/index">
-                    <i class="fa-solid fa-spa"></i> Comece seu teste grátis
-                </a>
-                <span class="hero-nota">Sem cartão de crédito · <strong>leva menos de 5 minutos</strong></span>
-            </div>
-        </div>
-        <div class="mini-agenda" aria-hidden="true">
-            <div class="cabecalho"><span>Setembro</span><i class="fa-solid fa-calendar-days"></i></div>
-            <div class="mini-dias">
-                <span class="fraca">D</span><span class="disp">2</span><span class="ocup">3</span><span class="disp">4</span><span class="ocup">5</span><span class="disp">6</span><span class="ocup">7</span>
-                <span class="ocup">8</span><span class="disp">9</span><span class="disp">10</span><span class="ocup">11</span><span class="disp">12</span><span class="disp">13</span><span class="ocup">14</span>
-            </div>
-            <div class="rodape">
-                <div class="cliente"><strong>Marina T.</strong><span>Hoje, 15:00 · Esmaltação em gel</span></div>
-                <span class="selo">Confirmado</span>
-            </div>
-        </div>
+  <!-- Header / progress -->
+  <header class="absolute top-0 inset-x-0 z-40 pt-3 px-3.5 pb-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
+    <div class="grid grid-cols-4 gap-1.5 mb-3" id="progress-bars-container">
+      <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="progress-bar-fill h-full bg-white transition-all duration-100 ease-linear rounded-full w-0" id="bar-0"></div></div>
+      <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="progress-bar-fill h-full bg-white transition-all duration-100 ease-linear rounded-full w-0" id="bar-1"></div></div>
+      <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="progress-bar-fill h-full bg-white transition-all duration-100 ease-linear rounded-full w-0" id="bar-2"></div></div>
+      <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="progress-bar-fill h-full bg-white transition-all duration-100 ease-linear rounded-full w-0" id="bar-3"></div></div>
     </div>
-</section>
 
-<section class="problema">
-    <div class="problema-head">
-        <h2>Você já conhece esse cenário</h2>
-    </div>
-    <div class="problema-grid">
-        <div class="problema-card">
-            <i class="fa-brands fa-whatsapp"></i>
-            <h3>Agenda perdida no WhatsApp</h3>
-            <p>A cliente manda mensagem, o horário fica solto em algum lugar da conversa, e é fácil esquecer de responder — ou de anotar.</p>
+    <div class="flex items-center justify-between pointer-events-auto">
+      <div class="flex items-center gap-2.5">
+        <div class="relative p-[2px] rounded-full bg-gradient-to-tr from-yellow-200 via-pink-500 to-fuchsia-600 shadow-sm">
+          <div class="w-9 h-9 rounded-full bg-pink-100 overflow-hidden border border-white/80 flex items-center justify-center">
+            <i class="fa-solid fa-spa text-brand-800 text-sm"></i>
+          </div>
+          <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 border-2 border-black rounded-full"></span>
         </div>
-        <div class="problema-card">
-            <i class="fa-solid fa-user-clock"></i>
-            <h3>Aquele horário que não veio</h3>
-            <p>Sem confirmação e sem lembrete automático, sobra um espaço vazio na agenda que ninguém avisou que ia ficar livre.</p>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-bold text-xs tracking-wide text-white drop-shadow-sm">agnayls.oficial</span>
+            <i class="fa-solid fa-circle-check text-[11px] text-pink-400"></i>
+          </div>
+          <p class="text-[10px] text-pink-200/80 tracking-tight" id="story-subtitle">Toque nas laterais para navegar</p>
         </div>
-        <div class="problema-card">
-            <i class="fa-solid fa-book"></i>
-            <h3>Contas soltas no caderninho</h3>
-            <p>Pagamento anotado à mão, recibo perdido, e no fim do mês ninguém sabe ao certo quanto realmente entrou.</p>
-        </div>
-    </div>
-</section>
+      </div>
 
-<section class="recursos" id="recursos">
-    <div class="recursos-inner">
-        <div class="recursos-head">
-            <h2>O que muda com o Agnayls</h2>
-            <p>Tudo pensado para o dia a dia de quem atende sozinha ou comanda uma equipe.</p>
-        </div>
-        <div class="recursos-grid">
-            <div class="recurso-card">
-                <div class="icone"><i class="fa-solid fa-calendar-check"></i></div>
-                <div>
-                    <h3>Agendamento 24 horas</h3>
-                    <p>A cliente escolhe o dia e o horário sozinha, pelo seu link — mesmo de madrugada, mesmo com você sem responder.</p>
-                </div>
-            </div>
-            <div class="recurso-card">
-                <div class="icone"><i class="fa-solid fa-sack-dollar"></i></div>
-                <div>
-                    <h3>Financeiro organizado</h3>
-                    <p>Cada atendimento concluído vira um lançamento automático, com relatórios diários e mensais prontos para imprimir.</p>
-                </div>
-            </div>
-            <div class="recurso-card">
-                <div class="icone"><i class="fa-solid fa-users"></i></div>
-                <div>
-                    <h3>Studio com equipe</h3>
-                    <p>No plano Studio, cada profissional tem a própria agenda e as próprias folgas, tudo dentro de um único painel.</p>
-                </div>
-            </div>
-            <div class="recurso-card">
-                <div class="icone"><i class="fa-brands fa-whatsapp"></i></div>
-                <div>
-                    <h3>Aviso pronto pro WhatsApp</h3>
-                    <p>Assim que um horário é confirmado, o Agnayls já deixa a mensagem pronta para enviar em um toque.</p>
-                </div>
-            </div>
-        </div>
+      <div class="flex items-center gap-2">
+        <button id="pause-btn" class="w-8 h-8 rounded-full glass-pill flex items-center justify-center text-white/90 hover:text-white transition active:scale-95" aria-label="Pausar / Retomar">
+          <i class="fa-solid fa-pause text-xs" id="pause-icon"></i>
+        </button>
+        <div class="px-2 py-0.5 rounded-full glass-pill text-[10px] font-semibold text-pink-100" id="counter-badge">1/4</div>
+      </div>
     </div>
-</section>
+  </header>
 
-<section class="como">
-    <div class="como-inner">
-        <div class="como-head">
-            <h2>Pra começar, são três passos</h2>
-        </div>
-        <div class="como-passos">
-            <div class="como-passo">
-                <div class="num"></div>
-                <h3>Configure seu studio</h3>
-                <p>Nome, serviços, valores e horário de atendimento — leva poucos minutos pra deixar tudo pronto.</p>
-            </div>
-            <div class="como-passo">
-                <div class="num"></div>
-                <h3>Compartilhe o link</h3>
-                <p>Cole na bio do Instagram, no status do WhatsApp ou onde suas clientes já costumam te encontrar.</p>
-            </div>
-            <div class="como-passo">
-                <div class="num"></div>
-                <h3>Receba os agendamentos</h3>
-                <p>Cada cliente escolhe o horário sozinha, e você acompanha tudo pelo painel — de onde estiver.</p>
-            </div>
-        </div>
-    </div>
-</section>
+  <div class="tap-zone tap-left" id="tap-prev" aria-label="Anterior"></div>
+  <div class="tap-zone tap-right" id="tap-next" aria-label="Próximo"></div>
 
-<section class="cta-final">
-    <div class="cta-card">
-        <h2>Sua próxima cliente já pode estar tentando agendar agora</h2>
-        <p>Comece o teste grátis e veja sua agenda se organizar sozinha.</p>
-        <a class="btn-primario" href="https://www.agnayls.com.br/index">
-            <i class="fa-solid fa-spa"></i> Comece seu teste grátis
-        </a>
-    </div>
-</section>
+  <div class="relative w-full h-full overflow-hidden" id="slides-wrapper">
 
-<footer>
-    <div class="footer-inner">
-        <div class="marca"><span class="icone"><i class="fa-solid fa-spa"></i></span> Agnayls</div>
-        <div class="footer-links">
-            <button type="button" id="btnAbrirTermosPromo">Termos de Uso e Política de Privacidade</button>
-            <a href="mailto:tecminia@gmail.com">tecminia@gmail.com</a>
+    <!-- SLIDE 0: Boas-vindas -->
+    <article class="story-slide active flex flex-col justify-end p-5 text-white" id="slide-0">
+      <div class="absolute inset-0 bg-gradient-to-br from-[#3a0f22] via-[#1b0510] to-[#0d0308]"></div>
+      <div class="blob w-64 h-64 bg-brand-500/35 -top-16 -right-16"></div>
+      <div class="blob w-56 h-56 bg-fuchsia-600/20 bottom-10 -left-16"></div>
+      <i class="fa-solid fa-spa text-[220px] text-white/[0.04] absolute -bottom-8 -right-10 rotate-12 pointer-events-none"></i>
+
+      <div class="relative z-20 space-y-3 pb-16">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] font-medium text-pink-200 uppercase tracking-widest border border-pink-300/40">
+          <i class="fa-solid fa-sparkles text-pink-300 text-xs"></i> Agende sem esforço
         </div>
-    </div>
-</footer>
 
-<div class="overlay" id="overlayTermosPromo">
-    <div class="modal">
-        <button class="modal-fechar" id="fecharTermosPromo" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
-        <div id="conteudoTermosPromo"></div>
-    </div>
+        <h1 class="text-3xl sm:text-4xl font-serif italic font-medium leading-tight drop-shadow-md">
+          Sua agenda ainda vive dentro do <span class="not-italic font-sans font-bold bg-gradient-to-r from-pink-200 via-pink-400 to-rose-300 bg-clip-text text-transparent">WhatsApp?</span>
+        </h1>
+
+        <p class="text-xs text-pink-100/90 leading-relaxed font-light drop-shadow">
+          O Agnayls organiza os horários, os pagamentos e o financeiro do seu studio — com um link que a própria cliente usa pra agendar, sem trocar mensagem.
+        </p>
+
+        <div class="flex flex-wrap gap-1.5 pt-1">
+          <span class="px-2.5 py-1 text-[10px] rounded-lg glass-card font-medium text-pink-100 flex items-center gap-1">📅 Link de agendamento próprio</span>
+          <span class="px-2.5 py-1 text-[10px] rounded-lg glass-card font-medium text-pink-100 flex items-center gap-1">💸 Financeiro automático</span>
+        </div>
+
+        <div class="pt-2 flex items-center justify-between text-[11px] text-pink-300 font-medium">
+          <span class="flex items-center gap-1"><i class="fa-solid fa-hand-pointer animate-bounce text-xs"></i> Toque à direita pra continuar</span>
+          <span class="text-white/60 text-[10px]">Arrasta ou toca &rarr;</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- SLIDE 1: O problema -->
+    <article class="story-slide next flex flex-col justify-end p-5 text-white" id="slide-1">
+      <div class="absolute inset-0 bg-gradient-to-br from-[#1f0511] via-[#150309] to-[#0a0204]"></div>
+      <div class="blob w-56 h-56 bg-rose-500/20 top-10 -right-14"></div>
+      <div class="blob w-48 h-48 bg-brand-700/25 -bottom-10 -left-10"></div>
+
+      <div class="relative z-20 space-y-3 pb-16">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] font-semibold text-pink-200">😩 Você já viveu isso</span>
+
+        <h2 class="text-2xl sm:text-3xl font-serif italic text-pink-50 leading-snug">Esses problemas ficam para trás</h2>
+
+        <div class="space-y-2 pt-1">
+          <div class="p-3 rounded-2xl glass-card flex items-center justify-between border-l-4 border-l-pink-400">
+            <div>
+              <h3 class="font-bold text-xs text-white"><i class="fa-brands fa-whatsapp mr-1"></i> Agenda perdida no chat</h3>
+              <p class="text-[10px] text-pink-200/80">Mensagem some na conversa, horário fica solto</p>
+            </div>
+            <span class="text-[10px] font-semibold text-emerald-300">Resolvido ✓</span>
+          </div>
+          <div class="p-3 rounded-2xl glass-card flex items-center justify-between border-l-4 border-l-rose-300">
+            <div>
+              <h3 class="font-bold text-xs text-white"><i class="fa-solid fa-user-clock mr-1"></i> Cliente que não confirmou</h3>
+              <p class="text-[10px] text-pink-200/80">Sem lembrete, sobra um espaço vazio na agenda</p>
+            </div>
+            <span class="text-[10px] font-semibold text-emerald-300">Resolvido ✓</span>
+          </div>
+          <div class="p-3 rounded-2xl glass-card flex items-center justify-between border-l-4 border-l-fuchsia-400">
+            <div>
+              <h3 class="font-bold text-xs text-white"><i class="fa-solid fa-book mr-1"></i> Contas soltas no caderninho</h3>
+              <p class="text-[10px] text-pink-200/80">Sem saber ao certo quanto entrou no mês</p>
+            </div>
+            <span class="text-[10px] font-semibold text-emerald-300">Resolvido ✓</span>
+          </div>
+        </div>
+
+        <p class="text-[10px] text-center text-pink-200/70 italic pt-1">✨ O Agnayls cuida de cada um desses pontos, sozinho.</p>
+      </div>
+    </article>
+
+    <!-- SLIDE 2: Recursos -->
+    <article class="story-slide next flex flex-col justify-end p-5 text-white" id="slide-2">
+      <div class="absolute inset-0 bg-gradient-to-br from-[#20050f] via-[#160309] to-[#0a0204]"></div>
+      <div class="blob w-60 h-60 bg-fuchsia-600/20 -top-14 -left-14"></div>
+      <div class="blob w-56 h-56 bg-brand-500/20 bottom-0 -right-16"></div>
+
+      <div class="relative z-20 space-y-3 pb-16">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] font-medium text-pink-200 uppercase tracking-wider">🌸 O que muda pra você</div>
+
+        <h2 class="text-2xl sm:text-3xl font-serif font-medium leading-tight">Feito para o seu <span class="italic text-pink-300">dia a dia</span></h2>
+
+        <div class="grid grid-cols-2 gap-2 text-left pt-1">
+          <div class="p-2.5 rounded-xl glass-card">
+            <i class="fa-solid fa-calendar-check text-pink-400 text-sm mb-1 block"></i>
+            <h4 class="font-bold text-[11px] text-white">Agendamento 24h</h4>
+            <p class="text-[9px] text-pink-200/80 leading-tight">Cliente escolhe o horário sozinha, pelo seu link.</p>
+          </div>
+          <div class="p-2.5 rounded-xl glass-card">
+            <i class="fa-solid fa-sack-dollar text-pink-400 text-sm mb-1 block"></i>
+            <h4 class="font-bold text-[11px] text-white">Financeiro organizado</h4>
+            <p class="text-[9px] text-pink-200/80 leading-tight">Cada atendimento vira lançamento automático.</p>
+          </div>
+          <div class="p-2.5 rounded-xl glass-card">
+            <i class="fa-solid fa-users text-pink-400 text-sm mb-1 block"></i>
+            <h4 class="font-bold text-[11px] text-white">Studio com equipe</h4>
+            <p class="text-[9px] text-pink-200/80 leading-tight">Cada profissional com a própria agenda.</p>
+          </div>
+          <div class="p-2.5 rounded-xl glass-card">
+            <i class="fa-brands fa-whatsapp text-pink-400 text-sm mb-1 block"></i>
+            <h4 class="font-bold text-[11px] text-white">Aviso pro WhatsApp</h4>
+            <p class="text-[9px] text-pink-200/80 leading-tight">Mensagem pronta assim que confirma o horário.</p>
+          </div>
+        </div>
+
+        <div class="p-2 rounded-xl bg-pink-950/60 border border-pink-500/30 flex items-center justify-between text-[11px]">
+          <span class="text-pink-200">⏱️ Configuração pronta em poucos minutos</span>
+        </div>
+      </div>
+    </article>
+
+    <!-- SLIDE 3: CTA final -->
+    <article class="story-slide next flex flex-col justify-end p-5 text-white" id="slide-3">
+      <div class="absolute inset-0 bg-gradient-to-br from-[#2a0914] via-[#170308] to-[#080103]"></div>
+      <div class="blob w-72 h-72 bg-brand-500/25 top-1/3 left-1/2 -translate-x-1/2"></div>
+      <i class="fa-solid fa-star text-pink-300 text-[8px] absolute top-[18%] left-[20%] twinkle"></i>
+      <i class="fa-solid fa-star text-pink-200 text-[6px] absolute top-[26%] right-[24%] twinkle" style="animation-delay:0.6s"></i>
+      <i class="fa-solid fa-star text-pink-300 text-[7px] absolute top-[40%] left-[30%] twinkle" style="animation-delay:1.2s"></i>
+
+      <div class="relative z-20 space-y-4 pb-16 text-center">
+        <div class="mx-auto w-14 h-14 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center shadow-lg shadow-pink-600/40 border-2 border-white/80">
+          <i class="fa-solid fa-spa text-2xl text-white"></i>
+        </div>
+
+        <div>
+          <span class="text-[10px] font-semibold tracking-widest text-pink-300 uppercase block mb-1">Teste grátis disponível</span>
+          <h2 class="text-3xl font-serif italic font-medium leading-tight">Pronta para organizar sua agenda de verdade?</h2>
+          <p class="text-xs text-pink-100/85 mt-2 font-light max-w-xs mx-auto">Configure seu studio, compartilhe o link e comece a receber agendamentos ainda hoje.</p>
+        </div>
+
+        <div class="flex justify-center gap-2 text-[10px] flex-wrap">
+          <span class="px-2.5 py-1 rounded-full glass-card text-pink-200">✨ Sem cartão de crédito</span>
+          <span class="px-2.5 py-1 rounded-full glass-card text-pink-200">⏱️ Pronto em minutos</span>
+        </div>
+
+        <div class="space-y-2.5 pt-2">
+          <a href="https://www.agnayls.com/index"
+             class="pulse-btn w-full block py-3.5 px-6 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white font-semibold text-sm shadow-xl shadow-pink-600/40 hover:brightness-110 active:scale-95 transition-all text-center border border-pink-300/40">
+            <i class="fa-solid fa-spa mr-1.5 text-base align-middle"></i> Comece seu teste grátis
+          </a>
+
+          <button onclick="shareStories()" class="w-full py-2.5 px-4 rounded-xl glass-pill text-pink-200 hover:text-white text-xs font-medium flex items-center justify-center gap-1.5 active:scale-95 transition">
+            <i class="fa-solid fa-share-nodes"></i> Compartilhar com uma amiga
+          </button>
+        </div>
+
+        <p class="text-[9px] text-pink-300/60">
+          Feito para studios de unhas e estética 💅 ·
+          <button type="button" onclick="abrirTermos()" class="underline hover:text-pink-200">Termos de Uso e Privacidade</button>
+        </p>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- Bottom action bar -->
+  <footer class="absolute bottom-0 inset-x-0 z-40 p-3 bg-gradient-to-t from-black via-black/85 to-transparent flex items-center gap-2">
+    <a href="https://wa.me/5592986451591?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20o%20Agnayls"
+       target="_blank"
+       class="flex-1 h-11 px-4 rounded-full border border-pink-400/40 bg-white/10 backdrop-blur-md flex items-center justify-between text-xs text-pink-100 hover:bg-white/20 transition active:scale-95">
+      <span class="truncate flex items-center gap-1.5">
+        <i class="fa-regular fa-comment-dots text-pink-300"></i>
+        <span>Falar com o suporte...</span>
+      </span>
+      <span class="text-pink-300 font-medium text-[11px] flex items-center gap-1">WhatsApp <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></span>
+    </a>
+
+    <button id="like-btn" class="w-11 h-11 rounded-full border border-pink-400/40 bg-white/10 backdrop-blur-md flex items-center justify-center text-pink-200 hover:text-pink-400 transition active:scale-90" aria-label="Curtir">
+      <i class="fa-regular fa-heart text-base transition-transform" id="like-icon"></i>
+    </button>
+
+    <a href="https://www.agnayls.com/index"
+       class="w-11 h-11 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white shadow-lg shadow-pink-500/30 hover:brightness-110 active:scale-90 transition" title="Comece agora">
+      <i class="fa-solid fa-arrow-right text-sm"></i>
+    </a>
+  </footer>
+
+  <div id="heart-burst" class="pointer-events-none absolute inset-0 z-50 overflow-hidden flex items-center justify-center opacity-0 transition-opacity duration-300">
+    <i class="fa-solid fa-heart text-pink-500 text-7xl drop-shadow-[0_0_20px_rgba(244,63,122,0.8)] transform scale-50 transition-transform duration-300" id="burst-icon"></i>
+  </div>
+
+</main>
+
+<div class="overlay-termos" id="overlayTermos">
+  <div class="modal-termos">
+    <button class="fechar-termos" id="fecharTermos" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+    <div id="conteudoTermos"></div>
+  </div>
 </div>
 
 <script src="termos-conteudo.js"></script>
 <script>
-(function () {
-    var overlay = document.getElementById('overlayTermosPromo');
-    var conteudo = document.getElementById('conteudoTermosPromo');
-    document.getElementById('btnAbrirTermosPromo').addEventListener('click', function () {
-        conteudo.innerHTML = window.AGNAIL_TERMOS_HTML || '<p>Não foi possível carregar os Termos de Uso no momento.</p>';
-        overlay.classList.add('show');
+  function abrirTermos() {
+    document.getElementById('conteudoTermos').innerHTML = window.AGNAIL_TERMOS_HTML || '<p>Não foi possível carregar os Termos de Uso no momento.</p>';
+    document.getElementById('overlayTermos').classList.add('show');
+    if (!isPaused) togglePause();
+  }
+  document.getElementById('fecharTermos').addEventListener('click', function () {
+    document.getElementById('overlayTermos').classList.remove('show');
+    if (isPaused) togglePause();
+  });
+  document.getElementById('overlayTermos').addEventListener('click', function (e) {
+    if (e.target === this) {
+      this.classList.remove('show');
+      if (isPaused) togglePause();
+    }
+  });
+
+  const TOTAL_SLIDES = 4;
+  const STORY_DURATION = 6000;
+  let currentSlide = 0;
+  let isPaused = false;
+  let startTime = null;
+  let elapsedBeforePause = 0;
+  let animationFrameId = null;
+
+  const slides = [
+    document.getElementById('slide-0'),
+    document.getElementById('slide-1'),
+    document.getElementById('slide-2'),
+    document.getElementById('slide-3')
+  ];
+  const bars = [
+    document.getElementById('bar-0'),
+    document.getElementById('bar-1'),
+    document.getElementById('bar-2'),
+    document.getElementById('bar-3')
+  ];
+  const counterBadge = document.getElementById('counter-badge');
+  const pauseBtn = document.getElementById('pause-btn');
+  const pauseIcon = document.getElementById('pause-icon');
+  const storySubtitle = document.getElementById('story-subtitle');
+
+  const subtitles = [
+    'Agendamento inteligente pro seu studio',
+    'O que fica pra trás com o Agnayls',
+    'Recursos pensados pro seu dia a dia',
+    'Comece seu teste grátis agora'
+  ];
+
+  function updateSlide(newIndex) {
+    if (newIndex < 0) return;
+    if (newIndex >= TOTAL_SLIDES) newIndex = 0;
+
+    bars.forEach((bar, i) => { bar.style.width = i < newIndex ? '100%' : '0%'; });
+
+    slides.forEach((slide, i) => {
+      slide.classList.remove('active', 'prev', 'next');
+      if (i === newIndex) slide.classList.add('active');
+      else if (i < newIndex) slide.classList.add('prev');
+      else slide.classList.add('next');
     });
-    document.getElementById('fecharTermosPromo').addEventListener('click', function () {
-        overlay.classList.remove('show');
-    });
-    overlay.addEventListener('click', function (e) {
-        if (e.target === overlay) overlay.classList.remove('show');
-    });
-})();
+
+    currentSlide = newIndex;
+    counterBadge.textContent = `${currentSlide + 1}/${TOTAL_SLIDES}`;
+    storySubtitle.textContent = subtitles[currentSlide];
+
+    elapsedBeforePause = 0;
+    startTime = performance.now();
+  }
+
+  function animateProgress(now) {
+    if (!isPaused && !document.getElementById('overlayTermos').classList.contains('show')) {
+      if (!startTime) startTime = now;
+      const currentElapsed = elapsedBeforePause + (now - startTime);
+      const percent = Math.min((currentElapsed / STORY_DURATION) * 100, 100);
+      if (bars[currentSlide]) bars[currentSlide].style.width = `${percent}%`;
+      if (currentElapsed >= STORY_DURATION) {
+        updateSlide(currentSlide < TOTAL_SLIDES - 1 ? currentSlide + 1 : 0);
+      }
+    }
+    animationFrameId = requestAnimationFrame(animateProgress);
+  }
+
+  document.getElementById('tap-prev').addEventListener('click', (e) => {
+    e.stopPropagation();
+    updateSlide(currentSlide > 0 ? currentSlide - 1 : 0);
+  });
+  document.getElementById('tap-next').addEventListener('click', (e) => {
+    e.stopPropagation();
+    updateSlide(currentSlide < TOTAL_SLIDES - 1 ? currentSlide + 1 : 0);
+  });
+
+  function togglePause() {
+    isPaused = !isPaused;
+    if (isPaused) {
+      pauseIcon.classList.remove('fa-pause');
+      pauseIcon.classList.add('fa-play');
+      elapsedBeforePause += performance.now() - startTime;
+    } else {
+      pauseIcon.classList.remove('fa-play');
+      pauseIcon.classList.add('fa-pause');
+      startTime = performance.now();
+    }
+  }
+  pauseBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePause(); });
+
+  const mainContainer = document.querySelector('.stories-container');
+  let holdTimeout = null;
+  mainContainer.addEventListener('touchstart', (e) => {
+    if (e.target.closest('a, button, input')) return;
+    holdTimeout = setTimeout(() => { if (!isPaused) togglePause(); }, 250);
+  }, { passive: true });
+  mainContainer.addEventListener('touchend', () => {
+    if (holdTimeout) clearTimeout(holdTimeout);
+    if (isPaused) togglePause();
+  }, { passive: true });
+
+  const likeBtn = document.getElementById('like-btn');
+  const likeIcon = document.getElementById('like-icon');
+  const heartBurst = document.getElementById('heart-burst');
+  const burstIcon = document.getElementById('burst-icon');
+  let isLiked = false;
+
+  likeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    isLiked = !isLiked;
+    if (isLiked) {
+      likeIcon.classList.remove('fa-regular', 'text-pink-200');
+      likeIcon.classList.add('fa-solid', 'text-pink-500', 'scale-125');
+      heartBurst.classList.remove('opacity-0');
+      burstIcon.classList.remove('scale-50');
+      burstIcon.classList.add('scale-110');
+      setTimeout(() => {
+        heartBurst.classList.add('opacity-0');
+        burstIcon.classList.remove('scale-110');
+        burstIcon.classList.add('scale-50');
+      }, 700);
+    } else {
+      likeIcon.classList.remove('fa-solid', 'text-pink-500', 'scale-125');
+      likeIcon.classList.add('fa-regular', 'text-pink-200');
+    }
+  });
+
+  function shareStories() {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Agnayls - Agendamento para Studios',
+        text: 'Olha esse app de agendamento pra studio de unhas, achei bem fofo!',
+        url: window.location.href,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copiado! Compartilhe com quem também precisa organizar a agenda 💕');
+    }
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') updateSlide(currentSlide + 1);
+    else if (e.key === 'ArrowLeft') updateSlide(currentSlide > 0 ? currentSlide - 1 : 0);
+  });
+
+  startTime = performance.now();
+  animationFrameId = requestAnimationFrame(animateProgress);
 </script>
 </body>
 </html>
