@@ -67,9 +67,6 @@
     border: 1px solid rgba(255, 255, 255, 0.14);
     box-shadow: 0 12px 32px 0 rgba(190, 18, 77, 0.18);
   }
-  .tap-zone { position: absolute; top: 75px; bottom: 110px; width: 45%; z-index: 30; cursor: pointer; }
-  .tap-left { left: 0; }
-  .tap-right { right: 0; }
   .blob { position: absolute; border-radius: 9999px; filter: blur(52px); pointer-events: none; }
   @keyframes pulse-soft {
     0%, 100% { transform: scale(1); }
@@ -81,6 +78,99 @@
     50% { opacity: 0.55; transform: scale(1.25); }
   }
   .twinkle { animation: twinkle 2.6s ease-in-out infinite; }
+
+  /* ---- Setas laterais (subidas) ---- */
+  .story-arrow {
+    position: absolute;
+    top: 46%;                     /* antes era 50% — subiu um pouco */
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 240, 245, 0.14);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+    color: #ffd9e6;
+    z-index: 45;
+    cursor: pointer;
+    transition: background .25s ease, color .25s ease, opacity .25s ease, transform .2s ease;
+  }
+  .story-arrow:hover { background: rgba(255, 240, 245, 0.28); color: #ffffff; }
+  .story-arrow:active { transform: translateY(-50%) scale(0.88); }
+  .story-arrow.dim { opacity: 0.25; pointer-events: none; }
+
+  /* ---- Botão lateral discreto (rosa bebê + roxo) ---- */
+  .side-tab {
+    position: absolute;
+    right: 0;
+    top: calc(50% + 34px);
+    width: 30px;
+    padding: 12px 0;
+    border-radius: 14px 0 0 14px;
+    background: linear-gradient(150deg, #ffd9e6 0%, #f5c6ff 45%, #c4b5fd 100%);
+    color: #7a1440;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    z-index: 44;
+    box-shadow: -6px 6px 20px rgba(190, 18, 77, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-right: none;
+    cursor: pointer;
+    transition: width .25s ease, box-shadow .25s ease, color .25s ease;
+  }
+  .side-tab:hover {
+    width: 38px;
+    box-shadow: -8px 6px 24px rgba(190, 18, 77, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    color: #5c0f31;
+  }
+  .side-tab:active { transform: scale(0.96); }
+  .side-tab-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .side-tab-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    background: #7a1440;
+    box-shadow: 0 0 6px rgba(122, 20, 64, 0.7);
+    animation: pulse-soft 1.8s infinite ease-in-out;
+  }
+
+  /* ---- Moldura dos vídeos ---- */
+  .moldura {
+    position: relative;
+    border-radius: 26px;
+    padding: 3px;
+    background: linear-gradient(135deg, #fea3c1 0%, #ffe4ec 30%, #fb6f9c 65%, #fecddc 100%);
+    box-shadow: 0 14px 36px rgba(244, 63, 122, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.18);
+  }
+  .moldura-inner {
+    border-radius: 23px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.62);
+    background: rgba(0, 0, 0, 0.4);
+  }
+  .moldura-glow {
+    position: absolute;
+    inset: -6px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, rgba(244, 63, 122, 0.45), rgba(217, 70, 239, 0.25), rgba(254, 205, 220, 0.4));
+    filter: blur(16px);
+    z-index: -1;
+  }
 
   .overlay-termos {
     position: fixed; inset: 0; background: rgba(10, 2, 6, 0.72); display: none;
@@ -126,7 +216,7 @@
             <span class="font-bold text-xs tracking-wide text-white drop-shadow-sm">agnayls.oficial</span>
             <i class="fa-solid fa-circle-check text-[11px] text-pink-400"></i>
           </div>
-          <p class="text-[10px] text-pink-200/80 tracking-tight" id="story-subtitle">Toque nas laterais para navegar</p>
+          <p class="text-[10px] text-pink-200/80 tracking-tight" id="story-subtitle">Use as setas para navegar</p>
         </div>
       </div>
 
@@ -139,24 +229,50 @@
     </div>
   </header>
 
-  <div class="tap-zone tap-left" id="tap-prev" aria-label="Anterior"></div>
-  <div class="tap-zone tap-right" id="tap-next" aria-label="Próximo"></div>
+  <!-- Setas laterais (subidas) -->
+  <button id="arrow-prev" class="story-arrow left-1.5" aria-label="Slide anterior">
+    <i class="fa-solid fa-chevron-left text-sm"></i>
+  </button>
+  <button id="arrow-next" class="story-arrow right-1.5" aria-label="Próximo slide">
+    <i class="fa-solid fa-chevron-right text-sm"></i>
+  </button>
+
+  <!-- Botão lateral discreto (rosa bebê + roxo) -->
+  <button id="side-btn" class="side-tab" aria-label="Atalho rápido">
+    <span class="side-tab-dot"></span>
+    <span class="side-tab-text">Teste grátis</span>
+    <i class="fa-solid fa-sparkles text-[10px]"></i>
+  </button>
 
   <div class="relative w-full h-full overflow-hidden" id="slides-wrapper">
 
-    <!-- SLIDE 0: Boas-vindas -->
-    <article class="story-slide active flex flex-col justify-end p-5 text-white" id="slide-0">
+    <!-- SLIDE 0: Boas-vindas (vídeo) -->
+    <article class="story-slide active flex flex-col justify-between p-4 pt-24 pb-20 text-white" id="slide-0">
       <div class="absolute inset-0 bg-gradient-to-br from-[#3a0f22] via-[#1b0510] to-[#0d0308]"></div>
       <div class="blob w-64 h-64 bg-brand-500/35 -top-16 -right-16"></div>
       <div class="blob w-56 h-56 bg-fuchsia-600/20 bottom-10 -left-16"></div>
       <i class="fa-solid fa-spa text-[220px] text-white/[0.04] absolute -bottom-8 -right-10 rotate-12 pointer-events-none"></i>
 
-      <div class="relative z-20 space-y-3 pb-16">
+      <!-- Vídeo em loop -->
+      <div class="relative z-20 w-full">
+        <div class="moldura">
+          <span class="moldura-glow"></span>
+          <div class="moldura-inner">
+            <video src="vid1.mp4"
+                   autoplay muted loop playsinline preload="auto"
+                   class="block w-full h-40 sm:h-44 object-cover object-center">
+            </video>
+          </div>
+        </div>
+        <span class="absolute -bottom-2.5 right-4 px-3 py-[3px] rounded-full text-[9px] font-semibold glass-pill text-pink-100 tracking-wide">Ao vivo • Agenda 24h</span>
+      </div>
+
+      <div class="relative z-20 space-y-2.5">
         <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] font-medium text-pink-200 uppercase tracking-widest border border-pink-300/40">
           <i class="fa-solid fa-sparkles text-pink-300 text-xs"></i> Agende sem esforço
         </div>
 
-        <h1 class="text-3xl sm:text-4xl font-serif italic font-medium leading-tight drop-shadow-md">
+        <h1 class="text-[26px] sm:text-3xl font-serif italic font-medium leading-tight drop-shadow-md">
           Sua agenda ainda vive dentro do <span class="not-italic font-sans font-bold bg-gradient-to-r from-pink-200 via-pink-400 to-rose-300 bg-clip-text text-transparent">WhatsApp?</span>
         </h1>
 
@@ -164,30 +280,45 @@
           O Agnayls organiza os horários, os pagamentos e o financeiro do seu studio — com um link que a própria cliente usa pra agendar, sem trocar mensagem.
         </p>
 
-        <div class="flex flex-wrap gap-1.5 pt-1">
+        <div class="flex flex-wrap gap-1.5 pt-0.5">
           <span class="px-2.5 py-1 text-[10px] rounded-lg glass-card font-medium text-pink-100 flex items-center gap-1">📅 Link de agendamento próprio</span>
           <span class="px-2.5 py-1 text-[10px] rounded-lg glass-card font-medium text-pink-100 flex items-center gap-1">💸 Financeiro automático</span>
         </div>
 
-        <div class="pt-2 flex items-center justify-between text-[11px] text-pink-300 font-medium">
-          <span class="flex items-center gap-1"><i class="fa-solid fa-hand-pointer animate-bounce text-xs"></i> Toque à direita pra continuar</span>
-          <span class="text-white/60 text-[10px]">Arrasta ou toca &rarr;</span>
+        <div class="pt-1 flex items-center gap-1.5 text-[10px] text-pink-300/90 font-medium">
+          <i class="fa-solid fa-arrow-left-long text-[9px]"></i>
+          <span>Use as setas laterais para navegar</span>
+          <i class="fa-solid fa-arrow-right-long text-[9px]"></i>
         </div>
       </div>
     </article>
 
-    <!-- SLIDE 1: O problema -->
-    <article class="story-slide next flex flex-col justify-end p-5 text-white" id="slide-1">
+    <!-- SLIDE 1: O problema (agora com vídeo) -->
+    <article class="story-slide next flex flex-col justify-between p-4 pt-24 pb-20 text-white" id="slide-1">
       <div class="absolute inset-0 bg-gradient-to-br from-[#1f0511] via-[#150309] to-[#0a0204]"></div>
       <div class="blob w-56 h-56 bg-rose-500/20 top-10 -right-14"></div>
       <div class="blob w-48 h-48 bg-brand-700/25 -bottom-10 -left-10"></div>
 
-      <div class="relative z-20 space-y-3 pb-16">
+      <!-- Vídeo em loop -->
+      <div class="relative z-20 w-full">
+        <div class="moldura">
+          <span class="moldura-glow"></span>
+          <div class="moldura-inner">
+            <video src="vid1.mp4"
+                   autoplay muted loop playsinline preload="auto"
+                   class="block w-full h-40 sm:h-44 object-cover object-center">
+            </video>
+          </div>
+        </div>
+        <span class="absolute -bottom-2.5 left-4 px-3 py-[3px] rounded-full text-[9px] font-semibold glass-pill text-pink-100 tracking-wide">Fim da bagunça</span>
+      </div>
+
+      <div class="relative z-20 space-y-2.5">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] font-semibold text-pink-200">😩 Você já viveu isso</span>
 
         <h2 class="text-2xl sm:text-3xl font-serif italic text-pink-50 leading-snug">Esses problemas ficam para trás</h2>
 
-        <div class="space-y-2 pt-1">
+        <div class="space-y-2 pt-0.5">
           <div class="p-3 rounded-2xl glass-card flex items-center justify-between border-l-4 border-l-pink-400">
             <div>
               <h3 class="font-bold text-xs text-white"><i class="fa-brands fa-whatsapp mr-1"></i> Agenda perdida no chat</h3>
@@ -211,22 +342,36 @@
           </div>
         </div>
 
-        <p class="text-[10px] text-center text-pink-200/70 italic pt-1">✨ O Agnayls cuida de cada um desses pontos, sozinho.</p>
+        <p class="text-[10px] text-center text-pink-200/70 italic">✨ O Agnayls cuida de cada um desses pontos, sozinho.</p>
       </div>
     </article>
 
-    <!-- SLIDE 2: Recursos -->
-    <article class="story-slide next flex flex-col justify-end p-5 text-white" id="slide-2">
+    <!-- SLIDE 2: Recursos (agora com vídeo) -->
+    <article class="story-slide next flex flex-col justify-between p-4 pt-24 pb-20 text-white" id="slide-2">
       <div class="absolute inset-0 bg-gradient-to-br from-[#20050f] via-[#160309] to-[#0a0204]"></div>
       <div class="blob w-60 h-60 bg-fuchsia-600/20 -top-14 -left-14"></div>
       <div class="blob w-56 h-56 bg-brand-500/20 bottom-0 -right-16"></div>
 
-      <div class="relative z-20 space-y-3 pb-16">
+      <!-- Vídeo em loop -->
+      <div class="relative z-20 w-full">
+        <div class="moldura">
+          <span class="moldura-glow"></span>
+          <div class="moldura-inner">
+            <video src="vid1.mp4"
+                   autoplay muted loop playsinline preload="auto"
+                   class="block w-full h-40 sm:h-44 object-cover object-center">
+            </video>
+          </div>
+        </div>
+        <span class="absolute -bottom-2.5 right-4 px-3 py-[3px] rounded-full text-[9px] font-semibold glass-pill text-pink-100 tracking-wide">Tudo em um só lugar</span>
+      </div>
+
+      <div class="relative z-20 space-y-2.5">
         <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full glass-pill text-[11px] font-medium text-pink-200 uppercase tracking-wider">🌸 O que muda pra você</div>
 
         <h2 class="text-2xl sm:text-3xl font-serif font-medium leading-tight">Feito para o seu <span class="italic text-pink-300">dia a dia</span></h2>
 
-        <div class="grid grid-cols-2 gap-2 text-left pt-1">
+        <div class="grid grid-cols-2 gap-2 text-left pt-0.5">
           <div class="p-2.5 rounded-xl glass-card">
             <i class="fa-solid fa-calendar-check text-pink-400 text-sm mb-1 block"></i>
             <h4 class="font-bold text-[11px] text-white">Agendamento 24h</h4>
@@ -256,14 +401,15 @@
     </article>
 
     <!-- SLIDE 3: CTA final -->
-    <article class="story-slide next flex flex-col justify-end p-5 text-white" id="slide-3">
+    <article class="story-slide next flex flex-col justify-center p-5 pt-24 pb-24 text-white" id="slide-3">
       <div class="absolute inset-0 bg-gradient-to-br from-[#2a0914] via-[#170308] to-[#080103]"></div>
       <div class="blob w-72 h-72 bg-brand-500/25 top-1/3 left-1/2 -translate-x-1/2"></div>
       <i class="fa-solid fa-star text-pink-300 text-[8px] absolute top-[18%] left-[20%] twinkle"></i>
       <i class="fa-solid fa-star text-pink-200 text-[6px] absolute top-[26%] right-[24%] twinkle" style="animation-delay:0.6s"></i>
       <i class="fa-solid fa-star text-pink-300 text-[7px] absolute top-[40%] left-[30%] twinkle" style="animation-delay:1.2s"></i>
+      <i class="fa-solid fa-star text-pink-200 text-[6px] absolute bottom-[28%] right-[18%] twinkle" style="animation-delay:1.8s"></i>
 
-      <div class="relative z-20 space-y-4 pb-16 text-center">
+      <div class="relative z-20 space-y-4 text-center">
         <div class="mx-auto w-14 h-14 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center shadow-lg shadow-pink-600/40 border-2 border-white/80">
           <i class="fa-solid fa-spa text-2xl text-white"></i>
         </div>
@@ -280,7 +426,7 @@
         </div>
 
         <div class="space-y-2.5 pt-2">
-          <a href="https://www.agnayls.com/index"
+          <a href="https://www.agnayls.com.br"
              class="pulse-btn w-full block py-3.5 px-6 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white font-semibold text-sm shadow-xl shadow-pink-600/40 hover:brightness-110 active:scale-95 transition-all text-center border border-pink-300/40">
             <i class="fa-solid fa-spa mr-1.5 text-base align-middle"></i> Comece seu teste grátis
           </a>
@@ -315,7 +461,7 @@
       <i class="fa-regular fa-heart text-base transition-transform" id="like-icon"></i>
     </button>
 
-    <a href="https://www.agnayls.com/index"
+    <a href="https://www.agnayls.com.br"
        class="w-11 h-11 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white shadow-lg shadow-pink-500/30 hover:brightness-110 active:scale-90 transition" title="Comece agora">
       <i class="fa-solid fa-arrow-right text-sm"></i>
     </a>
@@ -353,7 +499,7 @@
   });
 
   const TOTAL_SLIDES = 4;
-  const STORY_DURATION = 6000;
+  const STORY_DURATION = 14000; // 14 segundos por slide
   let currentSlide = 0;
   let isPaused = false;
   let startTime = null;
@@ -376,6 +522,9 @@
   const pauseBtn = document.getElementById('pause-btn');
   const pauseIcon = document.getElementById('pause-icon');
   const storySubtitle = document.getElementById('story-subtitle');
+  const arrowPrev = document.getElementById('arrow-prev');
+  const arrowNext = document.getElementById('arrow-next');
+  const sideBtn = document.getElementById('side-btn');
 
   const subtitles = [
     'Agendamento inteligente pro seu studio',
@@ -383,6 +532,11 @@
     'Recursos pensados pro seu dia a dia',
     'Comece seu teste grátis agora'
   ];
+
+  function updateArrows() {
+    arrowPrev.classList.toggle('dim', currentSlide === 0);
+    arrowNext.classList.toggle('dim', currentSlide === TOTAL_SLIDES - 1);
+  }
 
   function updateSlide(newIndex) {
     if (newIndex < 0) return;
@@ -400,6 +554,7 @@
     currentSlide = newIndex;
     counterBadge.textContent = `${currentSlide + 1}/${TOTAL_SLIDES}`;
     storySubtitle.textContent = subtitles[currentSlide];
+    updateArrows();
 
     elapsedBeforePause = 0;
     startTime = performance.now();
@@ -418,13 +573,21 @@
     animationFrameId = requestAnimationFrame(animateProgress);
   }
 
-  document.getElementById('tap-prev').addEventListener('click', (e) => {
+  // Navegação pelas setas laterais
+  arrowPrev.addEventListener('click', (e) => {
     e.stopPropagation();
-    updateSlide(currentSlide > 0 ? currentSlide - 1 : 0);
+    if (currentSlide === 0) return;
+    updateSlide(currentSlide - 1);
   });
-  document.getElementById('tap-next').addEventListener('click', (e) => {
+  arrowNext.addEventListener('click', (e) => {
     e.stopPropagation();
     updateSlide(currentSlide < TOTAL_SLIDES - 1 ? currentSlide + 1 : 0);
+  });
+
+  // Ação do botão lateral discreto
+  sideBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.open('https://www.agnayls.com.br', '_blank');
   });
 
   function togglePause() {
@@ -441,10 +604,11 @@
   }
   pauseBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePause(); });
 
+  // Segurar para pausar (sem navegação por toque)
   const mainContainer = document.querySelector('.stories-container');
   let holdTimeout = null;
   mainContainer.addEventListener('touchstart', (e) => {
-    if (e.target.closest('a, button, input')) return;
+    if (e.target.closest('a, button, input, video')) return;
     holdTimeout = setTimeout(() => { if (!isPaused) togglePause(); }, 250);
   }, { passive: true });
   mainContainer.addEventListener('touchend', () => {
@@ -492,10 +656,11 @@
   }
 
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight' || e.key === ' ') updateSlide(currentSlide + 1);
-    else if (e.key === 'ArrowLeft') updateSlide(currentSlide > 0 ? currentSlide - 1 : 0);
+    if (e.key === 'ArrowRight') updateSlide(currentSlide + 1);
+    else if (e.key === 'ArrowLeft' && currentSlide > 0) updateSlide(currentSlide - 1);
   });
 
+  updateArrows();
   startTime = performance.now();
   animationFrameId = requestAnimationFrame(animateProgress);
 </script>
