@@ -79,10 +79,10 @@
   }
   .twinkle { animation: twinkle 2.6s ease-in-out infinite; }
 
-  /* ---- Setas laterais (subidas) ---- */
+  /* ---- Setas laterais ---- */
   .story-arrow {
     position: absolute;
-    top: 46%;                     /* antes era 50% — subiu um pouco */
+    top: 46%;
     transform: translateY(-50%);
     width: 40px;
     height: 40px;
@@ -104,51 +104,6 @@
   .story-arrow:active { transform: translateY(-50%) scale(0.88); }
   .story-arrow.dim { opacity: 0.25; pointer-events: none; }
 
-  /* ---- Botão lateral discreto (rosa bebê + roxo) ---- */
-  .side-tab {
-    position: absolute;
-    right: 0;
-    top: calc(50% + 34px);
-    width: 30px;
-    padding: 12px 0;
-    border-radius: 14px 0 0 14px;
-    background: linear-gradient(150deg, #ffd9e6 0%, #f5c6ff 45%, #c4b5fd 100%);
-    color: #7a1440;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 7px;
-    z-index: 44;
-    box-shadow: -6px 6px 20px rgba(190, 18, 77, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    border-right: none;
-    cursor: pointer;
-    transition: width .25s ease, box-shadow .25s ease, color .25s ease;
-  }
-  .side-tab:hover {
-    width: 38px;
-    box-shadow: -8px 6px 24px rgba(190, 18, 77, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    color: #5c0f31;
-  }
-  .side-tab:active { transform: scale(0.96); }
-  .side-tab-text {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-  .side-tab-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 9999px;
-    background: #7a1440;
-    box-shadow: 0 0 6px rgba(122, 20, 64, 0.7);
-    animation: pulse-soft 1.8s infinite ease-in-out;
-  }
-
   /* ---- Moldura dos vídeos ---- */
   .moldura {
     position: relative;
@@ -162,6 +117,7 @@
     overflow: hidden;
     border: 2px solid rgba(255, 255, 255, 0.62);
     background: rgba(0, 0, 0, 0.4);
+    position: relative;
   }
   .moldura-glow {
     position: absolute;
@@ -171,6 +127,39 @@
     filter: blur(16px);
     z-index: -1;
   }
+
+  /* ---- Proteção do vídeo ---- */
+  .moldura-inner video {
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card-cta { pointer-events: auto; }
+
+  /* ---- Badge "Teste grátis" ---- */
+  .card-cta {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    z-index: 30;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b1136;
+    background: linear-gradient(150deg, #ffd9e6 0%, #f5c6ff 45%, #c4b5fd 100%);
+    box-shadow: 0 6px 16px rgba(122, 20, 64, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    transition: transform .2s ease, box-shadow .25s ease;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .card-cta:hover { transform: scale(1.06); box-shadow: 0 8px 20px rgba(122, 20, 64, 0.6); }
+  .card-cta:active { transform: scale(0.96); }
 
   .overlay-termos {
     position: fixed; inset: 0; background: rgba(10, 2, 6, 0.72); display: none;
@@ -192,11 +181,14 @@
 </head>
 <body class="flex items-center justify-center min-h-screen p-0 sm:p-4 overflow-hidden bg-gradient-to-b from-[#1b050f] via-[#100308] to-[#080104] text-white">
 
+<!-- Áudio de fundo em loop -->
+<audio id="bg-music" src="music1.mp3" loop preload="auto" playsinline></audio>
+
 <main class="stories-container relative mx-auto overflow-hidden sm:rounded-[36px] shadow-2xl border border-pink-900/30 bg-black flex flex-col justify-between">
 
   <!-- Header / progress -->
-  <header class="absolute top-0 inset-x-0 z-40 pt-3 px-3.5 pb-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
-    <div class="grid grid-cols-4 gap-1.5 mb-3" id="progress-bars-container">
+  <header class="absolute top-0 inset-x-0 z-40 pt-1.5 px-3.5 pb-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
+    <div class="grid grid-cols-4 gap-1.5 mb-2" id="progress-bars-container">
       <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="progress-bar-fill h-full bg-white transition-all duration-100 ease-linear rounded-full w-0" id="bar-0"></div></div>
       <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="progress-bar-fill h-full bg-white transition-all duration-100 ease-linear rounded-full w-0" id="bar-1"></div></div>
       <div class="h-1 bg-white/30 rounded-full overflow-hidden"><div class="progress-bar-fill h-full bg-white transition-all duration-100 ease-linear rounded-full w-0" id="bar-2"></div></div>
@@ -207,7 +199,7 @@
       <div class="flex items-center gap-2.5">
         <div class="relative p-[2px] rounded-full bg-gradient-to-tr from-yellow-200 via-pink-500 to-fuchsia-600 shadow-sm">
           <div class="w-9 h-9 rounded-full bg-pink-100 overflow-hidden border border-white/80 flex items-center justify-center">
-            <i class="fa-solid fa-spa text-brand-800 text-sm"></i>
+            <img src="assets/logo.png" alt="Agnayls" class="w-full h-full object-cover">
           </div>
           <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 border-2 border-black rounded-full"></span>
         </div>
@@ -221,6 +213,9 @@
       </div>
 
       <div class="flex items-center gap-2">
+        <button id="mute-btn" class="w-8 h-8 rounded-full glass-pill flex items-center justify-center text-white/90 hover:text-white transition active:scale-95" aria-label="Som">
+          <i class="fa-solid fa-volume-high text-xs" id="mute-icon"></i>
+        </button>
         <button id="pause-btn" class="w-8 h-8 rounded-full glass-pill flex items-center justify-center text-white/90 hover:text-white transition active:scale-95" aria-label="Pausar / Retomar">
           <i class="fa-solid fa-pause text-xs" id="pause-icon"></i>
         </button>
@@ -229,7 +224,7 @@
     </div>
   </header>
 
-  <!-- Setas laterais (subidas) -->
+  <!-- Setas laterais -->
   <button id="arrow-prev" class="story-arrow left-1.5" aria-label="Slide anterior">
     <i class="fa-solid fa-chevron-left text-sm"></i>
   </button>
@@ -237,34 +232,31 @@
     <i class="fa-solid fa-chevron-right text-sm"></i>
   </button>
 
-  <!-- Botão lateral discreto (rosa bebê + roxo) -->
-  <button id="side-btn" class="side-tab" aria-label="Atalho rápido">
-    <span class="side-tab-dot"></span>
-    <span class="side-tab-text">Teste grátis</span>
-    <i class="fa-solid fa-sparkles text-[10px]"></i>
-  </button>
-
   <div class="relative w-full h-full overflow-hidden" id="slides-wrapper">
 
-    <!-- SLIDE 0: Boas-vindas (vídeo) -->
+    <!-- SLIDE 0 -->
     <article class="story-slide active flex flex-col justify-between p-4 pt-24 pb-20 text-white" id="slide-0">
       <div class="absolute inset-0 bg-gradient-to-br from-[#3a0f22] via-[#1b0510] to-[#0d0308]"></div>
       <div class="blob w-64 h-64 bg-brand-500/35 -top-16 -right-16"></div>
       <div class="blob w-56 h-56 bg-fuchsia-600/20 bottom-10 -left-16"></div>
       <i class="fa-solid fa-spa text-[220px] text-white/[0.04] absolute -bottom-8 -right-10 rotate-12 pointer-events-none"></i>
 
-      <!-- Vídeo em loop -->
       <div class="relative z-20 w-full">
         <div class="moldura">
           <span class="moldura-glow"></span>
           <div class="moldura-inner">
             <video src="vid1.mp4"
                    autoplay muted loop playsinline preload="auto"
+                   controlslist="nodownload noplaybackrate noremoteplayback"
+                   disablepictureinpicture
+                   draggable="false"
+                   oncontextmenu="return false;"
                    class="block w-full h-40 sm:h-44 object-cover object-center">
             </video>
+            <a href="https://www.agnayls.com.br" target="_blank" rel="noopener" class="card-cta">Teste grátis</a>
           </div>
         </div>
-        <span class="absolute -bottom-2.5 right-4 px-3 py-[3px] rounded-full text-[9px] font-semibold glass-pill text-pink-100 tracking-wide">Ao vivo • Agenda 24h</span>
+        <span class="absolute -bottom-2.5 left-4 px-3 py-[3px] rounded-full text-[9px] font-semibold glass-pill text-pink-100 tracking-wide">Ao vivo • Agenda 24h</span>
       </div>
 
       <div class="relative z-20 space-y-2.5">
@@ -293,21 +285,25 @@
       </div>
     </article>
 
-    <!-- SLIDE 1: O problema (agora com vídeo) -->
+    <!-- SLIDE 1 -->
     <article class="story-slide next flex flex-col justify-between p-4 pt-24 pb-20 text-white" id="slide-1">
       <div class="absolute inset-0 bg-gradient-to-br from-[#1f0511] via-[#150309] to-[#0a0204]"></div>
       <div class="blob w-56 h-56 bg-rose-500/20 top-10 -right-14"></div>
       <div class="blob w-48 h-48 bg-brand-700/25 -bottom-10 -left-10"></div>
 
-      <!-- Vídeo em loop -->
       <div class="relative z-20 w-full">
         <div class="moldura">
           <span class="moldura-glow"></span>
           <div class="moldura-inner">
             <video src="vid1.mp4"
                    autoplay muted loop playsinline preload="auto"
+                   controlslist="nodownload noplaybackrate noremoteplayback"
+                   disablepictureinpicture
+                   draggable="false"
+                   oncontextmenu="return false;"
                    class="block w-full h-40 sm:h-44 object-cover object-center">
             </video>
+            <a href="https://www.agnayls.com.br" target="_blank" rel="noopener" class="card-cta">Teste grátis</a>
           </div>
         </div>
         <span class="absolute -bottom-2.5 left-4 px-3 py-[3px] rounded-full text-[9px] font-semibold glass-pill text-pink-100 tracking-wide">Fim da bagunça</span>
@@ -346,21 +342,25 @@
       </div>
     </article>
 
-    <!-- SLIDE 2: Recursos (agora com vídeo) -->
+    <!-- SLIDE 2 -->
     <article class="story-slide next flex flex-col justify-between p-4 pt-24 pb-20 text-white" id="slide-2">
       <div class="absolute inset-0 bg-gradient-to-br from-[#20050f] via-[#160309] to-[#0a0204]"></div>
       <div class="blob w-60 h-60 bg-fuchsia-600/20 -top-14 -left-14"></div>
       <div class="blob w-56 h-56 bg-brand-500/20 bottom-0 -right-16"></div>
 
-      <!-- Vídeo em loop -->
       <div class="relative z-20 w-full">
         <div class="moldura">
           <span class="moldura-glow"></span>
           <div class="moldura-inner">
             <video src="vid1.mp4"
                    autoplay muted loop playsinline preload="auto"
+                   controlslist="nodownload noplaybackrate noremoteplayback"
+                   disablepictureinpicture
+                   draggable="false"
+                   oncontextmenu="return false;"
                    class="block w-full h-40 sm:h-44 object-cover object-center">
             </video>
+            <a href="https://www.agnayls.com.br" target="_blank" rel="noopener" class="card-cta">Teste grátis</a>
           </div>
         </div>
         <span class="absolute -bottom-2.5 right-4 px-3 py-[3px] rounded-full text-[9px] font-semibold glass-pill text-pink-100 tracking-wide">Tudo em um só lugar</span>
@@ -400,7 +400,7 @@
       </div>
     </article>
 
-    <!-- SLIDE 3: CTA final -->
+    <!-- SLIDE 3 -->
     <article class="story-slide next flex flex-col justify-center p-5 pt-24 pb-24 text-white" id="slide-3">
       <div class="absolute inset-0 bg-gradient-to-br from-[#2a0914] via-[#170308] to-[#080103]"></div>
       <div class="blob w-72 h-72 bg-brand-500/25 top-1/3 left-1/2 -translate-x-1/2"></div>
@@ -410,8 +410,8 @@
       <i class="fa-solid fa-star text-pink-200 text-[6px] absolute bottom-[28%] right-[18%] twinkle" style="animation-delay:1.8s"></i>
 
       <div class="relative z-20 space-y-4 text-center">
-        <div class="mx-auto w-14 h-14 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center shadow-lg shadow-pink-600/40 border-2 border-white/80">
-          <i class="fa-solid fa-spa text-2xl text-white"></i>
+        <div class="mx-auto w-14 h-14 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center shadow-lg shadow-pink-600/40 border-2 border-white/80 overflow-hidden">
+          <img src="assets/logo.png" alt="Agnayls" class="w-full h-full object-cover">
         </div>
 
         <div>
@@ -448,7 +448,7 @@
   <!-- Bottom action bar -->
   <footer class="absolute bottom-0 inset-x-0 z-40 p-3 bg-gradient-to-t from-black via-black/85 to-transparent flex items-center gap-2">
     <a href="https://wa.me/5592986451591?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20informa%C3%A7%C3%B5es%20sobre%20o%20Agnayls"
-       target="_blank"
+       target="_blank" rel="noopener"
        class="flex-1 h-11 px-4 rounded-full border border-pink-400/40 bg-white/10 backdrop-blur-md flex items-center justify-between text-xs text-pink-100 hover:bg-white/20 transition active:scale-95">
       <span class="truncate flex items-center gap-1.5">
         <i class="fa-regular fa-comment-dots text-pink-300"></i>
@@ -461,7 +461,7 @@
       <i class="fa-regular fa-heart text-base transition-transform" id="like-icon"></i>
     </button>
 
-    <a href="https://www.agnayls.com.br"
+    <a href="https://www.agnayls.com.br" target="_blank" rel="noopener"
        class="w-11 h-11 rounded-full bg-gradient-to-tr from-pink-500 to-rose-400 flex items-center justify-center text-white shadow-lg shadow-pink-500/30 hover:brightness-110 active:scale-90 transition" title="Comece agora">
       <i class="fa-solid fa-arrow-right text-sm"></i>
     </a>
@@ -482,6 +482,75 @@
 
 <script src="termos-conteudo.js"></script>
 <script>
+  /* ---------- ÁUDIO DE FUNDO (music1.mp3 em loop) ---------- */
+  const bgMusic = document.getElementById('bg-music');
+  const muteBtn = document.getElementById('mute-btn');
+  const muteIcon = document.getElementById('mute-icon');
+  let musicUnlocked = false;
+  let userMuted = false;
+
+  bgMusic.volume = 0.55; // ajuste o volume se quiser
+
+  function tryPlayMusic() {
+    if (userMuted) return;
+    const p = bgMusic.play();
+    if (p && typeof p.then === 'function') {
+      p.then(() => {
+        musicUnlocked = true;
+        updateMuteIcon();
+        removeUnlockListeners();
+      }).catch(() => {
+        // Autoplay bloqueado — vamos esperar interação do usuário
+        updateMuteIcon(true);
+      });
+    }
+  }
+
+  function updateMuteIcon(pending) {
+    if (userMuted || (bgMusic.paused && !pending && !musicUnlocked)) {
+      muteIcon.classList.remove('fa-volume-high');
+      muteIcon.classList.add('fa-volume-xmark');
+    } else if (bgMusic.paused) {
+      muteIcon.classList.remove('fa-volume-high');
+      muteIcon.classList.add('fa-volume-xmark');
+    } else {
+      muteIcon.classList.remove('fa-volume-xmark');
+      muteIcon.classList.add('fa-volume-high');
+    }
+  }
+
+  // Tenta tocar ao carregar
+  window.addEventListener('load', tryPlayMusic);
+  tryPlayMusic();
+
+  // Fallback: qualquer interação destrava o som
+  function unlockOnInteraction() {
+    if (!musicUnlocked && !userMuted) tryPlayMusic();
+  }
+  function removeUnlockListeners() {
+    document.removeEventListener('click', unlockOnInteraction);
+    document.removeEventListener('touchstart', unlockOnInteraction);
+    document.removeEventListener('keydown', unlockOnInteraction);
+    document.removeEventListener('scroll', unlockOnInteraction);
+  }
+  document.addEventListener('click', unlockOnInteraction);
+  document.addEventListener('touchstart', unlockOnInteraction, { passive: true });
+  document.addEventListener('keydown', unlockOnInteraction);
+  document.addEventListener('scroll', unlockOnInteraction, { passive: true });
+
+  // Botão de mute/unmute
+  muteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    userMuted = !userMuted;
+    if (userMuted) {
+      bgMusic.pause();
+    } else {
+      bgMusic.play().then(() => { musicUnlocked = true; }).catch(() => {});
+    }
+    updateMuteIcon();
+  });
+
+  /* ---------- LÓGICA DOS STORIES ---------- */
   function abrirTermos() {
     document.getElementById('conteudoTermos').innerHTML = window.AGNAIL_TERMOS_HTML || '<p>Não foi possível carregar os Termos de Uso no momento.</p>';
     document.getElementById('overlayTermos').classList.add('show');
@@ -499,7 +568,7 @@
   });
 
   const TOTAL_SLIDES = 4;
-  const STORY_DURATION = 14000; // 14 segundos por slide
+  const STORY_DURATION = 14000;
   let currentSlide = 0;
   let isPaused = false;
   let startTime = null;
@@ -524,7 +593,6 @@
   const storySubtitle = document.getElementById('story-subtitle');
   const arrowPrev = document.getElementById('arrow-prev');
   const arrowNext = document.getElementById('arrow-next');
-  const sideBtn = document.getElementById('side-btn');
 
   const subtitles = [
     'Agendamento inteligente pro seu studio',
@@ -573,7 +641,6 @@
     animationFrameId = requestAnimationFrame(animateProgress);
   }
 
-  // Navegação pelas setas laterais
   arrowPrev.addEventListener('click', (e) => {
     e.stopPropagation();
     if (currentSlide === 0) return;
@@ -582,12 +649,6 @@
   arrowNext.addEventListener('click', (e) => {
     e.stopPropagation();
     updateSlide(currentSlide < TOTAL_SLIDES - 1 ? currentSlide + 1 : 0);
-  });
-
-  // Ação do botão lateral discreto
-  sideBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    window.open('https://www.agnayls.com.br', '_blank');
   });
 
   function togglePause() {
@@ -604,7 +665,6 @@
   }
   pauseBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePause(); });
 
-  // Segurar para pausar (sem navegação por toque)
   const mainContainer = document.querySelector('.stories-container');
   let holdTimeout = null;
   mainContainer.addEventListener('touchstart', (e) => {
@@ -658,6 +718,23 @@
   window.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') updateSlide(currentSlide + 1);
     else if (e.key === 'ArrowLeft' && currentSlide > 0) updateSlide(currentSlide - 1);
+  });
+
+  /* ---- Proteção do vídeo ---- */
+  document.addEventListener('contextmenu', function (e) {
+    if (e.target.tagName === 'VIDEO' || e.target.closest('.moldura-inner')) {
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('dragstart', function (e) {
+    if (e.target.tagName === 'VIDEO' || e.target.tagName === 'IMG') {
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+      if (e.target.closest('.moldura-inner')) e.preventDefault();
+    }
   });
 
   updateArrows();
